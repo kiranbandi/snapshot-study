@@ -1,0 +1,140 @@
+{
+  "title":"Demographics",
+  "instructions":"Please answer the following questions.",
+  "code":"",
+  "questions":[
+    {
+      "questiontype":"drop_down",
+      "instructions":"What is your gender?",
+      "id":"gender",
+      "dropheight":104,
+      "items":[
+        "Man",
+        "Woman",
+        "Non-Binary",
+        "Other",
+        "Not Stated"
+      ]
+    },
+    {
+      "questiontype":"field",
+      "instructions":"What is your age?",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"age"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"How many hours per week (in an average week) do you use desktop or laptop computers?",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"age"
+    },
+    {
+      "questiontype": "drop_down",
+      "instructions": "What is the diagonal size of your display? (Select the closest size or \"I don't know\".)",
+      "id": "display_size",
+      "dropheight": 205,
+      "items": [
+        "Less than 12 Inches",
+        "12 Inches",
+        "13 Inches",
+        "14 Inches",
+        "15 Inches",
+        "17 Inches",
+        "19 Inches",
+        "20 Inches",
+        "21 Inches",
+        "22 Inches",
+        "23 Inches",
+        "24 Inches",
+        "27 Inches",
+        "More than 27 Inches",
+        "I don't know"
+      ]
+    },
+    {
+      "questiontype": "drop_down",
+      "instructions": "What type of input device are you using?",
+      "id": "device",
+      "dropheight": 78,
+      "items": [
+        "Mouse",
+        "Trackpad",
+        "Touchscreen",
+        "Tablet",
+        "Other"
+      ]
+    },
+    {
+      "questiontype":"field",
+      "instructions":"What are the main types of data visualizations that you view or work with?",
+      "decimals": 0,
+      "width": 400,
+      "id":"visTypes"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"How many hours per month, in an average month, do you view or work with data visualizations?",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"vis"
+    },
+    {
+      "questiontype":"textview",
+      "title":"",
+      "text":"For the following types of data visualization, please enter the number of times per month you view or work with that type:"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"Please enter the number of times per month you view or work with Scatter Plots",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"scatter"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"Please enter the number of times per month you view or work with Bar Charts",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"bars"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"Please enter the number of times per month you view or work with Color-coded information maps",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"infoMaps"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"Please enter the number of times per month you view or work with Network or tree diagrams",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"Networks"
+    },
+    {
+      "questiontype":"field",
+      "instructions":"Please enter the number of times per month you view or work with other types not listed.",
+      "decimals": 0,
+      "width": 60,
+      "min": 0,
+      "max": 100,
+      "id":"other"
+    }
+  ]
+}
