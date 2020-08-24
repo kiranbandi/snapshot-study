@@ -1,5 +1,5 @@
 def create(db):
-    class emphasis(db.Model):
+    class snapshot(db.Model):
         __tablename__ = "snapshotV01"
         ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
         participantID = db.Column(db.Integer, db.ForeignKey('participant.participantID'))
@@ -26,7 +26,7 @@ def create(db):
         deficiencyText = db.Column(db.String)
 
 
-    return emphasis
+    return snapshot
 
 
 

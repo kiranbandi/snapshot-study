@@ -1,541 +1,78 @@
-{% extends "template.html" %}
-{% block head %}
-{% endblock %}
+{% extends "template.html" %} {% block head %} {% endblock %} {% block content %}
+<!-- Google fonts -->
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<!-- Bootstrap 3 -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+<link href="{{ url_for('my_blueprint.static', filename='babynames/css/bootstrap-combobox.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ url_for('my_blueprint.static', filename='babynames/css/style.css') }}" type="text/css" rel="stylesheet">
+<!-- other assets -->
+<script src="{{ url_for('my_blueprint.static', filename='babynames/js/libraries/d3.v3.min.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='babynames/js/libraries/bootstrap-combobox.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='babynames/js/snapshot.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='babynames/js/all_names.js') }}"></script>
+
+<body>
+
+    <div class="chartWrapper">
+
+        <div class="container-fluid" style="margin-bottom:25px ;">
+            <div class="text-right row text-center">
+                <h3 id='study-question' class='col-sm-offset-1 col-sm-8 column text-center'>When you are ready click on the "START STUDY" button</h3>
+                <button id='study-trigger' style="margin-top:20px ;" class="btn btn-danger col-sm-1 column text-center">START STUDY</button>
+            </div>
+        </div>
 
 
+        <div id="cont" class="container-fluid">
+            <!-- Search box and Boy / Girl button -->
+            <div class="row text-center">
+                <div class="col-sm-3 col-sm-offset-1 column text-center">
+                    <div class="form-group">
+                        <select id="searchBox" class="combobox input-large form-control" style="display: none;" onchange="searchEvent(this.value)">
+						  <option value="" selected="selected">Search name...</option>
+						</select>
+                    </div>
+                </div>
+                <div class="col-sm-2 col-sm-push-2 column text-center">
+                    <div id="buttonWrapper" class="btn-group" data-toggle="buttons">
+                        <label id="boyButton" class="btn btn-default"><input type="radio" class="btn-options"> BOYS </label>
+                        <label id="girlButton" class="btn btn-default active"><input type="radio" class="btn-options"> GIRLS </label>
+                    </div>
+                </div>
+                <div class="col-sm-3 col-sm-push-2 column text-center">
+                    <div class="col-md-offset-1 col-md-4 column text-center">
+                        <button class="btn btn-default" id='resetname'>RESET</button>
+                    </div>
+                </div>
+                <div class="col-sm-2 col-sm-pull-5 column text-center">
+                    <span class="genderTitle">Girls</span>
+                </div>
+            </div>
 
-{% block content %}
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://unpkg.com/d3-jnd@0.1.3/build/d3-jnd.js"></script>
+            <!-- Focus chart -->
+            <div class="row">
+                <div class="col-md-12 column text-center">
+                    <div class="chart focus"></div>
+                </div>
+            </div>
 
-<script src="{{ url_for('my_blueprint.static', filename='constants.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='colorconversion.js') }}"></script>
-
-
-
-        <div>
-
-
-<p>If a data point is visually
-            emphasized, press the <strong>'E'</strong> key (E = Emphasized); if no data point is
-            emphasized in the scatterplot, press the <strong>'N'</strong> key (N = No emphasis).</p>
-
+            <!-- Context chart -->
+            <div class="row">
+                <div class="col-md-12 column text-center">
+                    <div class="chart context"></div>
+                </div>
+            </div>
+        </div>
     </div>
-<br><br>
-<div id="stimulus"  style="cursor: none;"></div>
-
-
-
-<script>
-// session tracking/logging variables
-    var userID = ""
-    var sessionTime = 0;
-    var trialStartTime = 0;
-    var trialEndTime = 0;
-    var rating;
-    var targetX;
-    var targetY;
-    var respInt;
-    var width;
-    var distanceFromCenter;
-
-//  user engagement checks
-    var dummy_accuracy = 1; //used to check accuracy on dummy trials -- will create alert if too low <80%
-    var dummy_correct = 0;
-    var dummy_count = 0;
-    var performance_check_accuracy = 1;  //used to check performance in trials with lv 3+, should have atleast 0.8
-    var high_performance_trials = 0;
-    var high_performance_correct = 0;
-
-
-
-// Stimulus set variables
-    var inchesToDisplay = 50;
-    var dpi = 0;
-    var layoutType = "grid";
-    var LARGEST_SIZE = visualAngleToPixels(6.0, 45, 96);
-    proximity = visualAngleToPixels(5, inchesToDisplay, dpi);
-	var colors = [[81,224,88], [57,242,116], [91,239,115], [101,242,26], [152,248,29], [30,104,54],[81,224,88], [57,242,116], [91,239,115], [101,242,26], [152,248,29], [30,104,54]];
-	var shapes = ["qton6","qton5","qton4","qton3","qton1","circle_unfilled","qton6","qton5","qton4","qton3","qton1","circle_unfilled"];
-	var shapeTypes = ["square_filled","star_filled","diamond_filled","square_unfilled","star_unfilled","diamond_unfilled"];
-
-	var stimuli = ["color","shape","dummy"];  //not used anymore
-	var dummy = 12;
-
-//[50,0,0]
-    var baseColor = [133,185,115]
-    var resp;
-    var gap;
-    var start1, start2 = 0;
-    var distractors = [];
-    var positions = [];
-    var adjustedSize = [20, 200];
-    var chosenStimuli = stimuli[0];  //not used anymore
-
-    var GRID_PAD = 100;
-
-
-    //this will look disgusting, but is faster than trying a fancy fix
-
-    // [stimuli, stimuliColor, level, showTarget, targetShape, targetSize, distractorBlur, distractorOpacity]
-    var trial_array =
-        [
-           ["dummy",baseColor, 1, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 2, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 3, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 4, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 5, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 6, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 7, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 8, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 9, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 10, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 11, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 12, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 13, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 14, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 15, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 16, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 17, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 18, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 19, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 20, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 21, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 22, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 23, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 24, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 25, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 26, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 27, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 28, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 29, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 30, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 31, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 32, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 33, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 34, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 35, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 36, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 37, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 38, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 39, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 40, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 41, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 42, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 43, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 44, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 45, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 46, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 47, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 48, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 49, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 50, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 51, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 52, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 53, false, "circle_filled",[20, 20],0,1],
-            ["dummy",baseColor, 54, false, "circle_filled",[20, 20],0,1],
-            ["color", colors[0],  1, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[1], 2, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[2], 3, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[3], 4, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[4], 5, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[5], 6, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[6],1, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[7], 2, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[8], 3, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[9], 4, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[10],5, true, "circle_filled",[20, 20],0,1],
-            ["color", colors[11],6, true, "circle_filled",[20, 20],0,1],
-            ["QTON", baseColor, 1, true, shapes[0],[20, 20],0,1],
-            ["QTON", baseColor, 2, true, shapes[1],[20, 20],0,1],
-            ["QTON", baseColor, 3, true, shapes[2],[20, 20],0,1],
-            ["QTON", baseColor, 4, true, shapes[3],[20, 20],0,1],
-            ["QTON", baseColor, 5, true, shapes[4],[20, 20],0,1],
-            ["QTON", baseColor, 6, true, shapes[5],[20, 20],0,1],
-            ["QTON", baseColor, 1, true, shapes[6],[20, 20],0,1],
-            ["QTON", baseColor, 2, true, shapes[7],[20, 20],0,1],
-            ["QTON", baseColor, 3, true, shapes[8],[20, 20],0,1],
-            ["QTON", baseColor, 4, true, shapes[9],[20, 20],0,1],
-            ["QTON", baseColor, 5, true, shapes[10],[20, 20],0,1],
-            ["QTON", baseColor, 6, true, shapes[11],[20, 20],0,1],
-            ["shape", baseColor, 1, true, shapeTypes[0],[20, 20],0,1],
-            ["shape", baseColor, 2, true, shapeTypes[1],[20, 20],0,1],
-            ["shape", baseColor, 3, true, shapeTypes[2],[20, 20],0,1],
-            ["shape", baseColor, 4, true, shapeTypes[3],[20, 20],0,1],
-            ["shape", baseColor, 5, true, shapeTypes[4],[20, 20],0,1],
-            ["shape", baseColor, 6, true, shapeTypes[5],[20, 20],0,1],
-            ["shape", baseColor, 1, true, shapeTypes[0],[20, 20],0,1],
-            ["shape", baseColor, 2, true, shapeTypes[1],[20, 20],0,1],
-            ["shape", baseColor, 3, true, shapeTypes[2],[20, 20],0,1],
-            ["shape", baseColor, 4, true, shapeTypes[3],[20, 20],0,1],
-            ["shape", baseColor, 5, true, shapeTypes[4],[20, 20],0,1],
-            ["shape", baseColor, 6, true, shapeTypes[5],[20, 20],0,1],
-            ["size",baseColor, 1, true, "circle_filled",[22.00, 22.00],0,1],
-            ["size",baseColor, 2, true, "circle_filled",[23.79, 23.79],0,1],
-            ["size",baseColor, 3, true, "circle_filled",[25.42, 25.42],0,1],
-            ["size",baseColor, 4, true, "circle_filled",[26.93, 26.93],0,1],
-            ["size",baseColor, 5, true, "circle_filled",[28.33,28.33],0,1],
-            ["size",baseColor, 6, true, "circle_filled",[29.64,29.64],0,1],
-            ["size",baseColor, 1, true, "circle_filled",[22.00, 22.00],0,1],
-            ["size",baseColor, 2, true, "circle_filled",[23.79, 23.79],0,1],
-            ["size",baseColor, 3, true, "circle_filled",[25.42, 25.42],0,1],
-            ["size",baseColor, 4, true, "circle_filled",[26.93, 26.93],0,1],
-            ["size",baseColor, 5, true, "circle_filled",[28.33,28.33],0,1],
-            ["size",baseColor, 6, true, "circle_filled",[29.64,29.64],0,1],
-            ["blur",baseColor, 1, true, "circle_filled",[20, 20],0.5,1],
-            ["blur",baseColor, 2, true, "circle_filled",[20, 20],1,1],
-            ["blur",baseColor, 3, true, "circle_filled",[20, 20],1.5,1],
-            ["blur",baseColor, 4, true, "circle_filled",[20, 20],2,1],
-            ["blur",baseColor, 5, true, "circle_filled",[20, 20],2.5,1],
-            ["blur",baseColor, 6, true, "circle_filled",[20, 20],3,1],
-            ["blur",baseColor, 1, true, "circle_filled",[20, 20],0.5,1],
-            ["blur",baseColor, 2, true, "circle_filled",[20, 20],1,1],
-            ["blur",baseColor, 3, true, "circle_filled",[20, 20],1.5,1],
-            ["blur",baseColor, 4, true, "circle_filled",[20, 20],2,1],
-            ["blur",baseColor, 5, true, "circle_filled",[20, 20],2.5,1],
-            ["blur",baseColor, 6, true, "circle_filled",[20, 20],3,1],
-            ["opacity",baseColor, 1, true, "circle_filled",[20, 20],0,0.85],
-            ["opacity",baseColor, 2, true, "circle_filled",[20, 20],0,0.7],
-            ["opacity",baseColor, 3, true, "circle_filled",[20, 20],0,0.55],
-            ["opacity",baseColor, 4, true, "circle_filled",[20, 20],0,0.4],
-            ["opacity",baseColor, 5, true, "circle_filled",[20, 20],0,0.25],
-            ["opacity",baseColor, 6, true, "circle_filled",[20, 20],0,0.1],
-            ["opacity",baseColor, 1, true, "circle_filled",[20, 20],0,0.85],
-            ["opacity",baseColor, 2, true, "circle_filled",[20, 20],0,0.7],
-            ["opacity",baseColor, 3, true, "circle_filled",[20, 20],0,0.55],
-            ["opacity",baseColor, 4, true, "circle_filled",[20, 20],0,0.4],
-            ["opacity",baseColor, 5, true, "circle_filled",[20, 20],0,0.25],
-            ["opacity",baseColor, 6, true, "circle_filled",[20, 20],0,0.1],
-            ["motion",baseColor, 1, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 2, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 3, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 4, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 5, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 6, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 1, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 2, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 3, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 4, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 5, true, "motion",[20, 20],0,1],
-            ["motion",baseColor, 6, true, "motion",[20, 20],0,1],
-            ["flicker",baseColor, 1, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 2, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 3, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 4, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 5, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 6, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 1, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 2, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 3, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 4, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 5, true, "flicker",[20, 20],0,1],
-            ["flicker",baseColor, 6, true, "flicker",[20, 20],0,1],
-            ["pulse",baseColor, 1, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 2, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 3, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 4, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 5, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 6, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 1, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 2, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 3, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 4, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 5, true, "pulse",[20, 20],0,1],
-            ["pulse",baseColor, 6, true, "pulse",[20, 20],0,1],
-
-
-        ];
-
-    var totalTrials = trial_array.length;
-    //var totalTrials = 5;
-
-    var initialSelection = Math.floor(Math.random() * totalTrials);
-
-
-    $(document).ready(function() {
-
-        //background color
-        //document.body.style.background = "black";
-
-       			// Instantiate the input
-        $(this).keyup(function(evt){
-		  //console.log(evt)
-		  if (evt.which == 69) { //used to be 70
-			resp = 0
-              clearInterval(respInt);
-			// This is in Stimuli.js. For flickering the blank screen
-			adapt(true);
-		  }
-		  if (evt.which == 78) { //used to be 74
-		      clearInterval(respInt);
-			resp = 1;
-			adapt(true);
-		  }
-		});
-
-        //shuffle trial array
-        trial_array = shuffle(trial_array);
-
-            // Set the panel widget
-        var nc = 1;
-        var nr = 1;
-        var panelW = (layoutType == "grid") ? (2 * proximity + 2 * GRID_PAD + LARGEST_SIZE) * nc:
-                            2 * (proximity + 2 * LARGEST_SIZE);
-
-
-        var panelH = //panelW(layoutType == "grid") ? (2 * GRID_PAD + 2 * maxSize) * nr:
-                            (proximity + LARGEST_SIZE);
-
-        console.log("window height: " + window.innerWidth)
-        console.log("window width: " +window.innerHeight)
-
-        panelW = window.innerWidth*0.66;
-        panelW=panelW*0.90;
-        panelH = window.innerHeight-200;
-
-
-        console.log("panelW: " + panelW)
-        console.log("panelH: " + panelH)
-        size = 20;//visualAngleToPixels(2.0,parseFloat(d*24), document.getElementById("dpi").offsetHeight)/2;
-			gap = visualAngleToPixels(6.0,30, 96)/2;
-			/*if (2*size + gap > $("#stimulus").width) {
-				$("#stimulus").width(2*size + gap);
-			}*/
-            $("#stimulus").height(panelH);
-            $("#stimulus").width(panelW);
-//			var w = $("#stimulus").width();
-            var width = 4*gap + 2 * GRID_PAD + size;
-            //.log("witdht " +width)
-			//start1 = width * 0.5  - 0.5*gap;
-			//new slightly random start1 position: Math.floor(Math.random() * 11)
-            //start1 = Math.floor(Math.random() * width);
-            start1 = generateRandom(130, width-50)
-			start2 = gap + 20 + start1;
-			trial = 1;
-
-
-        //console.log(d3.lab('grey'))
-        //console.log(d3.lab(133,185,115))
-
-        var legible = d3.noticeablyDifferent(d3.lab(133,185,115), d3.lab(81,224,88)); // true
-
-        //console.log(d3.jndLabInterval(0.5, 0.3))
-
-        startSession();
-        trialStartTime = new Date();
-        console.log("trial start: " + trialStartTime)
-        drawStimulus(trial_array[initialSelection][1], trial_array[initialSelection][2], trial_array[initialSelection][3], trial_array[initialSelection][4],trial_array[initialSelection][5],trial_array[initialSelection][6])
-
-
-	});
-
-
-    var drawStimulus = function(target, level, showTarget, shape, targetSize, distractorBlur){
-
-        //reset trialStartTime at every draw Stimulus
-        trialStartTime = new Date();
-        //width = 4*gap + 2 * GRID_PAD + 2*size,
-        width = $("#stimulus").width();
-        height = $("#stimulus").height();
-
-        console.log("width " + width)
-
-
-        start1 = generateRandom(130, width-50) //making position random
-        generatePositions(start1, start2, target, gap, shape, targetSize);
-
-         // Remove any existing SVG on the page
-        d3.select("svg").remove();
-
-        var svg = d3.select("body").select("div #stimulus")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
-
-        center = 0.5*width;
-
-        //stuff for filters
-        var defs = svg.append("defs");
-
-
-        var dropShadowFilter = defs.append('svg:filter')
-          .attr('id', 'drop-shadow')
-          .attr('filterUnits', "userSpaceOnUse")
-          .attr('width', '250%')
-          .attr('height', '250%');
-        dropShadowFilter.append('svg:feGaussianBlur')
-          .attr('in', 'SourceGraphic')
-          .attr('stdDeviation', distractorBlur)
-          .attr('result', 'blur-out');
-
-
-
-
-        var data = [10, 15, 20, 25, 30];
-
-        var xscale = d3.scaleLinear()
-            .domain([0, d3.max(data)])
-            .range([5, width-5]);
-
-        var yscale = d3.scaleLinear()
-                .domain([0, d3.max(data)])
-                .range([height-GRID_PAD, 0]);
-
-
-        var x_axis = d3.axisBottom()
-                .scale(xscale);
-
-        var y_axis = d3.axisLeft()
-                .scale(yscale);
-
-        x_axis.tickFormat((d,i) => ' ');
-
-     // Add y-axis
-          svg.append("g")
-              .attr("class", "axis")
-              .attr("transform", "translate(5, 0)")
-              .call(y_axis);
-
-      // Add X-axis
-      svg.append("g")
-          .attr("class", "axis")
-          .attr("transform", "translate(0," + (height - GRID_PAD + 1) + ")")
-          .call(x_axis);
-
-        renderSingleMark(svg);
-
-
-    }
-
-
-    var generatePositions = function(x1, x2, c1, gap, shape, targetSize){
-        var rightX = x1;
-        var leftX = x2;
-        //var height = Math.abs(normal(.5, 1.0, 10)* $("#stimulus").height()  - 10);
-        var heightPosition = getRandomInt(50, height-100);
-        console.log("here" +heightPosition)
-
-        var numDistractors = Math.pow((width*height) / (20*20), 1.0/2.0);
-        //var numDistractors = Math.sqrt((width*height)/(20*20))
-        console.log("num distractors: " + numDistractors)
-        var distractorColor = baseColor;
-
-        // Check for overdraw and don't draw if there is any with the target points
-        var points = [[leftX, $("#stimulus").height()/2- 20], [rightX, heightPosition]];
-        for (var i = 0; i < numDistractors; i++) {
-            // Pick coords (used to be 350 and 300
-            var x = getRandomInt(50, width-20);
-            var y = getRandomInt(50, height-100);
-
-            // Check for conflict
-            var intersectsPoint = false;
-            for (var p = 0; p < points.length; p++) {
-                intersectsPoint = intersect(points[p], [x, y], 20) || intersectsPoint;
-                if (intersectsPoint){
-                    break;
-                }
-            }
-
-            if (!intersectsPoint){
-                positions.push(buildPosition(adjustedSize[0], x, y, distractorColor.slice(0), 0, 0, "circle"));
-                points.push([x, y]);
-            }
-        }
-
-        //check if trial is showTrial
-        targetX = rightX;
-        //targetY =  $("#stimulus").height() / 2 - 20;
-        targetY = heightPosition;
-
-        distanceFromCenter = Math.hypot(rightX-(width/2),heightPosition-(height/2))
-        //console.log("distance: " + distanceFromCenter)
-
-        positions.push([
-                targetSize,	// Size
-                c1.slice(0), // Color
-                rightX, // X
-                heightPosition, //$("#stimulus").height() / 2 - 20, // Y getRandomInt(50, height-100),//
-                0, // Not used
-                0, // Position of the fixed (non-jittered color)
-                shape
-            ]);
-
-    }
-
-    function buildPosition(h, x, y, c, p, l, shape) {
-    distractors.push(h);
-    return [
-        [adjustedSize[0], h],
-        c.slice(0),
-        x,
-        y,
-        p,
-        l,
-        shape
-    ];
-    };
-
-    function intersect(p1, p2, r){
-        return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2)) < r;
-    };
-
-
-    function getRandomInt(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    var logResponse = function() {
-
-
-            clearInterval(respInt);
-        if(trial>10) {
-            if (trial_array[initialSelection][0] == "dummy" && dummy_accuracy < 0.70) {
-                alert('Your accuracy in engagement check trials is low.')
-            }
-
-            if (trial_array[initialSelection][2] >= 4 && performance_check_accuracy < 0.80) {
-                console.log("perf check " + performance_check_accuracy)
-                alert('Your accuracy in test trials is lower than expected.')
-            }
-        }
-
-
-        console.log(trial)
-
-		trial++;
-
-        //remove the previously trial selection from the trialbag
-        trial_array.splice(initialSelection,1)
-
-		//if we havent done all the trials, go next trial
-        if (trial_array.length>0){
-		//if (trial <= totalTrials){
-
-
-            //select a random stimuli (color, shape, or dummy)
-            initialSelection = Math.floor(Math.random() * trial_array.length);
-
-
-            //clear out the data and do next trial
-
-            positions = [];
-
-            drawStimulus(trial_array[initialSelection][1], trial_array[initialSelection][2], trial_array[initialSelection][3], trial_array[initialSelection][4],trial_array[initialSelection][5],trial_array[initialSelection][6])
-
-
-        }else{
-		    //we're done with al trials
-            window.location.href = "/redirect_next_page";
-        }
-	};
-
-
-
-
-
-
-</script>
+    <script src="{{ url_for('my_blueprint.static', filename='babynames/js/questions.js')}}"></script>
+    <script src="{{ url_for('my_blueprint.static', filename='babynames/js/babynames.js')}}"></script>
+    <script src="{{ url_for('my_blueprint.static', filename='babynames/js/study.js')}}"></script>
+</body>
 
 {% endblock %}

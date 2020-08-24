@@ -15,10 +15,6 @@ var strokeWidth = [12, 8, 8, 6, 6, 4, 4, 2, 2, 2];
 var selectedName = false;
 
 
-
-// custom timer kiran
-
-
 ////////////////////////////////////////////////////////////// 
 ///////////////////// Girls and Boys ///////////////////////// 
 ////////////////////////////////////////////////////////////// 
@@ -26,14 +22,14 @@ var selectedName = false;
 var gender = "girls";
 
 
-window.snapshot.initializeSnapshot(true, 1000, {
+window.snapshot.initializeSnapshot(false, 1000, {
         'class': '.focus>svg',
         'type': 'svg',
         'size': { 'width': 250, 'height': 100 }
     },
     (data) => {
         changeName(data.name, data.sex);
-    });
+    }, false);
 
 var color = (gender === "boys" ? colorBoys : colorGirls);
 var namesByID = (gender === "boys" ? boyNamesByID : girlNamesByID);
@@ -524,7 +520,10 @@ function recenter() {
 
 d3.select("#boyButton").on("click", function(e) { redraw("boys") });
 d3.select("#girlButton").on("click", function(e) { redraw("girls") });
-d3.select("#resetname").on("click", function(e) { selectedName = false });
+d3.select("#resetname").on("click", function(e) {
+    selectedName = false;
+    searchEvent('');
+});
 
 ////////////////////////////////////////////////////////////// 
 /////////////////////////// Search /////////////////////////// 
@@ -541,11 +540,6 @@ function searchEvent(name) {
         d3.select(".genderTitle").text(name)
         d3.select(".genderTitle").style("color", color(name));
         selectedName = true;
-
-        // clearTimeout(nameTimer);
-        // nameTimer = setTimeout(function(e) {
-        //     selectedName = false;
-        // }, 5000);
 
         //Take all the years in the top 10 of the name and reset the brush 
         //to the time between the first and last occurrence

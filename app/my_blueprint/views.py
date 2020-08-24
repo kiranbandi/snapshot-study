@@ -11,70 +11,6 @@ my_blueprint = Blueprint('my_blueprint', __name__,
                          static_folder='static')
 
 
-@my_blueprint.route("/ishihara", methods=['POST', 'GET'])
-@verify_correct_page
-@verify_session_valid
-def color_test():
-    incorrect = None
-
-    if request.method == 'POST':
-        log = db.emphasis()
-        log.participantID = session['participantID']
-        log.vision = request.form['vision']
-        log.vissioncomment = request.form['vissioncomment']
-        log.deficiency = request.form['deficiency']
-        log.deficiencyText = request.form['deficiencyText']
-        log.response07 = request.form['response07']
-        log.response01 = request.form['response01']
-        log.response08 = request.form['response08']
-        log.response06 = request.form['response06']
-        log.response10 = request.form['response10']
-
-
-        db.session.add(log)
-        db.session.commit()
-#or log.response10.lower() != "5"
-        if log.response01.lower() != "12":
-            incorrect = True
-            return render_template("eligibility.html", example="This is example text.")
-        else:
-            return redirect("/redirect_next_page")
-        #if log.one.lower() == "74" and log.two.lower() == "12" and log.three.lower() == "6" and log.four.lower() == "15":
-        #    return redirect("/redirect_next_page")
-        #else:
-        #    incorrect = True
-        #    return render_template("eligibility.html", example="This is example text.")
-
-
-    return render_template("ishihara.html", example="This is example text.", incorrect=incorrect)
-
-
-
-@my_blueprint.route("/eligibility", methods=['POST', 'GET'])
-@verify_correct_page
-@verify_session_valid
-def eligibility():
-    incorrect = None
-
-    return render_template("eligibility.html", example="This is example text.")
-
-@my_blueprint.route("/pre-study", methods=['POST', 'GET'])
-@verify_correct_page
-@verify_session_valid
-def pre_study():
-
-
-    return render_template("pre-study.html", example="This is example text.")
-
-
-
-@my_blueprint.route("/practice", methods=['POST', 'GET'])
-@verify_correct_page
-@verify_session_valid
-def practice_results():
-    incorrect = None
-
-    return render_template("practice.html", example="This is example text.")
 
 @my_blueprint.route("/debrief", methods=['POST', 'GET'])
 @verify_correct_page
@@ -90,7 +26,7 @@ def debrief():
 @verify_session_valid
 def study_results():
     if request.method == 'POST':
-        log = db.emphasis()
+        log = db.snapshot()
         log.participantID = session['participantID']
         log.trialStart = request.form['trialStart']
         log.trialEnd = request.form['trialEnd']
@@ -109,11 +45,8 @@ def study_results():
         log.distractorOpacity = request.form['distractorOpacity']
         log.response = request.form['response']
         log.correct = request.form['correct']
-
-
         db.session.add(log)
         db.session.commit()
-
     return render_template("study.html", example="This is example text.")
 
 

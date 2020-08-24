@@ -1,37 +1,25 @@
-{% extends "template.html" %}
-{% block head %}
-{% endblock %}
+{% extends "template.html" %} {% block head %} {% endblock %} {% block content %}
 
-
-
-{% block content %}
-
- <div>
-        <h1>You will now begin the study.</h1>
-
-
- </div>
+<div>
+    <h1>You will now begin the study.</h1>
+</div>
 
 <script>
-
     $(document).ready(function() {
         alert("Press 'OK' to exit this window and begin the study.");
         postResponseValues("done");
     });
 
 
-	var postResponseValues = function(response) {
-	    var practiceResult = {
-	        response: response
+    var postResponseValues = function(response) {
+        var practiceResult = {
+            response: response
         };
-        $.post("#", practiceResult).then(function(){
+        $.post("#", practiceResult).then(function() {
             // I NEED TO MOVE TO THE NEXT PAGE HERE (E.G., FOR NOW, END)
-
             window.location.href = "/redirect_next_page";
         })
-	};
-
-
+    };
 </script>
 
 
