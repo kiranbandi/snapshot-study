@@ -61,47 +61,6 @@
             "min": 0,
             "max": 100,
             "id": "vis"
-        },
-        {
-            "questiontype": "textview",
-            "title": "",
-            "text": "For the following types of data visualization, please enter the number of times per month you view or work with that type:"
-        },
-        {
-            "questiontype": "field",
-            "instructions": "Please enter the number of times per month you view or work with Scatter Plots",
-            "decimals": 0,
-            "width": 60,
-            "min": 0,
-            "max": 100,
-            "id": "scatter"
-        },
-        {
-            "questiontype": "field",
-            "instructions": "Please enter the number of times per month you view or work with Bar Charts",
-            "decimals": 0,
-            "width": 60,
-            "min": 0,
-            "max": 100,
-            "id": "bars"
-        },
-        {
-            "questiontype": "field",
-            "instructions": "Please enter the number of times per month you view or work with Network or Tree Diagrams",
-            "decimals": 0,
-            "width": 60,
-            "min": 0,
-            "max": 100,
-            "id": "Networks"
-        },
-        {
-            "questiontype": "field",
-            "instructions": "Please enter the number of times per month you view or work with other types of visualizations that are not listed.",
-            "decimals": 0,
-            "width": 60,
-            "min": 0,
-            "max": 100,
-            "id": "other"
         }
     ]
 }
