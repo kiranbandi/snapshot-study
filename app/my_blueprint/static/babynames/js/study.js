@@ -1,4 +1,4 @@
-var isSnapshot = urlParam('snapshot') == 'yes';
+var isSnapshot = true;
 
 
 var trialStartTime;

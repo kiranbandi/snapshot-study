@@ -11,7 +11,6 @@ my_blueprint = Blueprint('my_blueprint', __name__,
                          static_folder='static')
 
 
-
 @my_blueprint.route("/debrief", methods=['POST', 'GET'])
 @verify_correct_page
 @verify_session_valid
