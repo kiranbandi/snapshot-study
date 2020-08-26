@@ -1,7 +1,24 @@
 var trialStartTime;
 var qOrder = 0;
-var currentQuestions = studyQuestions['no-snapshot'];
-var answers = [];
+countOfNameSearch = 0;
+
+var currentQuestions = [{
+    "label": "Was the girl's name AMANDA popular(ranked in top 10) in the year 2005? (answer with yes or no)",
+    "type": "boolean",
+    "answer": "no"
+}, {
+    "label": "In the year 1940 what was the position of boy's name JOHN?",
+    "type": "number",
+    "answer": "3"
+}, {
+    "label": "In the decade between 1940 and 1950 what was the most popular boy's name?",
+    "type": "number",
+    "answer": "james"
+}, {
+    "label": "What was the highest position ever achieved by the girl's name CAROL? (where 1 is the highest position and 10 the lowest)",
+    "type": "boolean",
+    "answer": "4"
+}]
 
 // trigger information box
 Swal.mixin({
@@ -30,86 +47,76 @@ Swal.mixin({
     }
 ]).then(() => {
     Swal.fire({
-        text: 'First explore the chart for a minute then after you are done exploring, click the red coloured next button in the top right corner. ',
+        text: 'First explore the chart then after you are ready, click on the red coloured "START PRACTICE" button in the top right corner. ',
         confirmButtonText: 'Explore the chart'
     })
 })
 
 $("#study-trigger").on('click', function() {
-
     if ($("#study-trigger").text() == 'ANSWER') {
         Swal.fire({
             title: currentQuestions[qOrder].label,
             input: 'text',
             confirmButtonText: 'SUBMIT',
             showCancelButton: true,
-            allowOutsideClick: false,
+            allowOutsideClick: true,
             inputValidator: (value) => {
-                if (!value) {
-                    return 'You answer cannot be empty'
+                if (!checkAnswer(value)) {
+                    return 'That is not the correct answer please try again';
                 }
-                if (currentQuestions[qOrder].type == 'boolean' && (value.toLocaleLowerCase() != 'yes' && value.toLocaleLowerCase() != 'no')) {
-                    return "You must answer in yes or no"
-                }
-
             }
         }).then((response) => {
             if (response.isConfirmed) {
-                answers.push(response.value);
-                qOrder += 1;
-                if (qOrder == 15) {
-                    alert('study complete');
-                    console.log(answers);
-                } else {
-                    trialStartTime = new Date();
-                    $('#study-question').text(currentQuestions[qOrder].label);
-                }
+                logResponse(response.value);
             }
         })
 
     } else {
-        trialStartTime = new Date();
-        $('#study-question').text(currentQuestions[qOrder].label);
-        $("#study-trigger").text('ANSWER');
+        showQuestion();
     }
 })
 
-
-function urlParam(name) {
-    var results = new RegExp('[\?&]' + name + '=([^&#]*)')
-        .exec(window.location.search);
-
-    return (results !== null) ? results[1] || 0 : false;
-}
-
-
-var postResponseValues = function(user_answer, questionNumber, snapshotMode = false, correct = true) {
-
+var logResponse = function(user_answer) {
 
     $("#study-trigger").text('Loading...');
 
-    endTime = new Date();
+    var endTime = new Date();
 
+    // formulate json to store in DB.
     var trialResult = {
         trialStart: trialStartTime,
         trialEnd: endTime,
         trialTime: endTime - trialStartTime,
-        snapshotMode: snapshotMode,
-        questionNumber: questionNumber,
+        studyMode: 'practice',
+        questionNumber: qOrder + 1,
         response: user_answer,
-        correct: correct
+        correct: checkAnswer(user_answer),
+        snapshotMode: 'nosnap',
+        nameSearchCount: countOfNameSearch
     };
-
+    console.log("logging response for practice question - ", qOrder);
     $.post("#", trialResult).then(function() {
-        $("#study-trigger").text('ANSWER');
         // after results are posted 
+        $("#study-trigger").text('ANSWER');
         qOrder += 1;
-        if (qOrder == 15) {
-            alert('study complete');
-
+        if (qOrder == 4) {
+            alert('Your practice round is complete. This page will now automatically close and you will be redirected to the study page.');
+            window.location.href = "/redirect_next_page";
         } else {
-            $('#study-question').text(currentQuestions[qOrder].label);
-
+            showQuestion();
         }
     })
 };
+
+
+
+var showQuestion = function() {
+    trialStartTime = new Date();
+    countOfNameSearch = 0;
+    $('#study-question').text(currentQuestions[qOrder].label);
+    $("#study-trigger").text('ANSWER');
+}
+
+var checkAnswer = function(value) {
+    return value.trim().toLocaleLowerCase() == currentQuestions[qOrder].answer;
+}

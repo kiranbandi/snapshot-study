@@ -13,7 +13,7 @@ var startYear = 1880,
 var strokeWidth = [12, 8, 8, 6, 6, 4, 4, 2, 2, 2];
 
 var selectedName = false;
-
+var countOfNameSearch = 0;
 
 ////////////////////////////////////////////////////////////// 
 ///////////////////// Girls and Boys ///////////////////////// 
@@ -21,15 +21,14 @@ var selectedName = false;
 
 var gender = "girls";
 
-
-window.snapshot.initializeSnapshot(false, 1000, {
-        'class': '.focus>svg',
-        'type': 'svg',
-        'size': { 'width': 250, 'height': 100 }
-    },
-    (data) => {
-        changeName(data.name, data.sex);
-    }, false);
+// window.snapshot.initializeSnapshot(false, 1000, {
+//         'class': '.focus>svg',
+//         'type': 'svg',
+//         'size': { 'width': 250, 'height': 100 }
+//     },
+//     (data) => {
+//         changeName(data.name, data.sex);
+//     }, false);
 
 var color = (gender === "boys" ? colorBoys : colorGirls);
 var namesByID = (gender === "boys" ? boyNamesByID : girlNamesByID);
@@ -459,7 +458,6 @@ function brushmove() {
 function brushend() {
     if (!d3.event.sourceEvent) return; // only transition after input
     var extent = brush.extent();
-    // window.snapshot.updateSnapshot({ 'name': d3.select('.genderTitle').text(), 'years': extent, 'sex': gender })
     d3.select(this).transition()
         .call(brush.extent(brush.extent().map(function(d) { return d3.round(d, 0); })))
         .call(brush.event);
@@ -518,8 +516,14 @@ function recenter() {
 ////////////////////////// Buttons /////////////////////////// 
 ////////////////////////////////////////////////////////////// 
 
-d3.select("#boyButton").on("click", function(e) { redraw("boys") });
-d3.select("#girlButton").on("click", function(e) { redraw("girls") });
+d3.select("#boyButton").on("click", function(e) {
+    selectedName = false;
+    redraw("boys")
+});
+d3.select("#girlButton").on("click", function(e) {
+    selectedName = false;
+    redraw("girls")
+});
 d3.select("#resetname").on("click", function(e) {
     selectedName = false;
     searchEvent('');
@@ -532,6 +536,8 @@ d3.select("#resetname").on("click", function(e) {
 var nameTimer;
 
 function searchEvent(name) {
+
+    countOfNameSearch = countOfNameSearch + 1;
 
     //If the name is not equal to the default, find that name and highlight it - mouseover function
     if (name != "") {
@@ -579,7 +585,7 @@ function searchEvent(name) {
             .style("opacity", null)
             .style("stroke", function(c) { return "url(#line-gradient-" + gender + "-" + c.name + ")"; });
     } //else
-    window.snapshot.updateSnapshot({ 'name': name, 'years': brush.extent(), 'sex': gender })
+    // window.snapshot.updateSnapshot({ 'name': name, 'years': brush.extent(), 'sex': gender })
 } //searchEvent
 
 ////////////////////////////////////////////////////////////// 
