@@ -1,49 +1,24 @@
 var trialStartTime;
 var qOrder = 0;
 var currentQuestions = studyQuestions['no-snapshot'];
-var answers = [];
 
 // trigger information box
-Swal.mixin({
-    confirmButtonText: 'Next &rarr;',
+Swal.fire({
+    title: "The study will now begin.",
+    confirmButtonText: 'START',
     showCancelButton: false,
     allowOutsideClick: false,
-    progressSteps: ['1', '2', '3', '4', '5', '6']
-}).queue([{
-        title: '10 Popular Baby Names in US',
-        text: 'This chart shows the 10 most popular baby names per year since 1880 in USA.'
-    },
-    {
-        text: 'You can search for over 50 plus unique boy and girl names that have entered the top 10 in the last 135 years and see their rise and fall. '
-    },
-    {
-        text: 'Every name is represented by a line and line thickness stands for the highest position ever reached by a name'
-    },
-    {
-        text: 'Click on a name line or search for it to see its full reign in the top 10. To cancel your selection click the reset button.'
-    },
-    {
-        text: 'You can toggle between the genders and use the small overview at the bottom to select a particular time period.'
-    },
-    {
-        text: 'Play around with the chart by searching for names, toggling the gender buttons and changing the year selector at the bottom.'
-    }
-]).then(() => {
-    Swal.fire({
-        text: 'First explore the chart for a minute then after you are done exploring, click the red coloured next button in the top right corner. ',
-        confirmButtonText: 'Explore the chart'
-    })
-})
+}).then(() => { showQuestion() })
 
+// handle answering
 $("#study-trigger").on('click', function() {
-
     if ($("#study-trigger").text() == 'ANSWER') {
         Swal.fire({
             title: currentQuestions[qOrder].label,
             input: 'text',
             confirmButtonText: 'SUBMIT',
             showCancelButton: true,
-            allowOutsideClick: false,
+            allowOutsideClick: true,
             inputValidator: (value) => {
                 if (!value) {
                     return 'You answer cannot be empty'
@@ -51,65 +26,51 @@ $("#study-trigger").on('click', function() {
                 if (currentQuestions[qOrder].type == 'boolean' && (value.toLocaleLowerCase() != 'yes' && value.toLocaleLowerCase() != 'no')) {
                     return "You must answer in yes or no"
                 }
-
             }
         }).then((response) => {
-            if (response.isConfirmed) {
-                answers.push(response.value);
-                qOrder += 1;
-                if (qOrder == 15) {
-                    alert('study complete');
-                    console.log(answers);
-                } else {
-                    trialStartTime = new Date();
-                    $('#study-question').text(currentQuestions[qOrder].label);
-                }
-            }
+            if (response.isConfirmed) { logResponse(response.value) }
         })
-
-    } else {
-        trialStartTime = new Date();
-        $('#study-question').text(currentQuestions[qOrder].label);
-        $("#study-trigger").text('ANSWER');
-    }
+    } else { showQuestion() }
 })
 
-
-function urlParam(name) {
-    var results = new RegExp('[\?&]' + name + '=([^&#]*)')
-        .exec(window.location.search);
-
-    return (results !== null) ? results[1] || 0 : false;
-}
-
-
-var postResponseValues = function(user_answer, questionNumber, snapshotMode = false, correct = true) {
-
-
+var logResponse = function(user_answer) {
     $("#study-trigger").text('Loading...');
-
-    endTime = new Date();
-
+    // get end time
+    var endTime = new Date();
+    // formulate json to store in DB.
     var trialResult = {
         trialStart: trialStartTime,
         trialEnd: endTime,
         trialTime: endTime - trialStartTime,
-        snapshotMode: snapshotMode,
-        questionNumber: questionNumber,
+        studyMode: 'study',
+        questionNumber: qOrder + 1,
         response: user_answer,
-        correct: correct
+        correct: checkAnswer(user_answer),
+        snapshotMode: 'nosnap',
+        nameSearchCount: countOfNameSearch
     };
-
+    console.log("logging response for study question - ", qOrder);
     $.post("#", trialResult).then(function() {
-        $("#study-trigger").text('ANSWER');
         // after results are posted 
+        $("#study-trigger").text('ANSWER');
         qOrder += 1;
         if (qOrder == 15) {
-            alert('study complete');
-
+            alert('Your study round is complete. This page will now automatically close and you will be redirected to the debriefing page.');
+            window.location.href = "/redirect_next_page";
         } else {
-            $('#study-question').text(currentQuestions[qOrder].label);
-
+            showQuestion();
         }
     })
 };
+
+
+var showQuestion = function() {
+    trialStartTime = new Date();
+    countOfNameSearch = 0;
+    $('#study-question').text(currentQuestions[qOrder].label);
+    $("#study-trigger").text('ANSWER');
+}
+
+var checkAnswer = function(value) {
+    return value.trim().toLocaleLowerCase() == currentQuestions[qOrder].answer;
+}

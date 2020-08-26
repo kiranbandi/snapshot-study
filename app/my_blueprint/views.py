@@ -14,7 +14,6 @@ my_blueprint = Blueprint('my_blueprint', __name__,
 @my_blueprint.route("/practice", methods=['POST', 'GET'])
 @verify_correct_page
 @verify_session_valid
-
 def practice_results():
     if request.method == 'POST':
         log = db.snapshot()
@@ -43,20 +42,12 @@ def study_results():
         log.trialStart = request.form['trialStart']
         log.trialEnd = request.form['trialEnd']
         log.trialTime = request.form['trialTime']
-        log.stimuli = request.form['stimuli']
-        #log.stimuliColor = request.form['stimuliColor']
-        log.userRating = request.form['userRating']
-        log.level = request.form['level']
-        log.targetPresent = request.form['targetPresent']
-        log.targetShape = request.form['targetShape']
-        log.targetSize = request.form['targetSize']
-        log.targetX = request.form['targetX']
-        log.targetY = request.form['targetY']
-        log.distanceFromCenter = request.form['distanceFromCenter']
-        log.distractorBlur = request.form['distractorBlur']
-        log.distractorOpacity = request.form['distractorOpacity']
-        log.response = request.form['response']
-        log.correct = request.form['correct']
+        log.studyMode = request.form['studyMode']
+        log.questionNumber=request.form['questionNumber']
+        log.response=request.form['response']
+        log.correct=request.form['correct']
+        log.snapshotMode=request.form['snapshotMode']
+        log.nameSearchCount=request.form['nameSearchCount']
         db.session.add(log)
         db.session.commit()
     return render_template("study.html", example="This is example text.")
@@ -66,7 +57,6 @@ def study_results():
 @verify_correct_page
 @verify_session_valid
 def debrief():
-    incorrect = None
     return render_template("debrief.html", example="This is example text.")
 
 # route to view the database records and export them
