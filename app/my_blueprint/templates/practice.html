@@ -1,0 +1,393 @@
+{% extends "template.html" %} {% block head %} {% endblock %} {% block content %}
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script src="{{ url_for('my_blueprint.static', filename='constants.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='colorconversion.js') }}"></script>
+
+
+
+<div>
+    <h1>Study Tutorial</h1>
+
+    <p>
+        In this study you will see several scatterplot images. Look at each scatterplot to see whether one of the data points is visually emphasized. You may see data points emphasized with a different color, a different shape, a different size, or they may appear
+        to be 'in focus' when compared to the rest. If a data point is visually emphasized, press the <strong>'E'</strong> key (E = Emphasized); if no data point is emphasized in the scatterplot, press the <strong>'N'</strong> key (N = No emphasis).
+        Answer as quickly as you can, but focus on accuracy - you must answer correctly on at least XY% of the trials. When you answer 'E' to indicate that a data point is emphasized, a dialog will pop up to ask you how different the emphasized point
+        was from the other points (e.g., if it was a different color, how different; if it was a different shape, how different). In the training trials, the popup will also tell you whether you were correct or incorrect (this will not be done in the
+        test trials).
+
+
+    </p>
+
+    <p>Please press <strong>'E'</strong> or <strong>'N'</strong> to submit your response.</p>
+</div>
+
+<br><br><br>
+<div id="foo"></div>
+<div id="stimulus" width="700px" height="400px"></div>
+
+
+
+<script>
+    // Stimulus set variables
+    var colors = [
+        [
+            [50, 0, 40],
+            [50, 0, 40]
+        ],
+        [
+            [50, 0, 10],
+            [50, 0, 50]
+        ],
+        [
+            [60, 0, 40],
+            [30, 0, 50]
+        ]
+    ];
+    var shapes = ["square_filled", "diamond_filled", "square_unfilled", "diamond_unfilled", "qton3", "qton4", "square_filled", "diamond_filled", "square_unfilled", "diamond_unfilled", "qton3", "qton4"];
+
+    // Active stimulus variables
+    var trial = 0;
+    var color = [];
+    var size = 0;
+    var userId = 0;
+    var start1, start2 = 0;
+    var query = "";
+    var resp;
+    var activeColor;
+    var adjustedColor;
+    var respInt;
+    var positions = [];
+    var adjustedSize = [20, 200];
+    var distractors = []; // not used
+    var gap;
+    var baseColor = [50, 0, 0];
+
+    var GRID_PAD = 50;
+
+    // [stimuli, stimuliColor, level, showTarget, targetShape, targetSize, distractorBlur, distractorOpacity]
+    var trial_array = [
+        ["opacity", baseColor, 6, true, "circle_filled", [20, 20], 0, 0.1],
+        ["shape", baseColor, 1, true, shapes[0],
+            [20, 20], 0, 1
+        ],
+        ["shape", baseColor, 2, true, shapes[1],
+            [20, 20], 0, 1
+        ],
+        ["dummy", baseColor, 7, false, "circle_filled", [20, 20], 0, 1],
+        ["opacity", baseColor, 6, true, "circle_filled", [20, 20], 0, 0.1],
+        ["shape", baseColor, 3, true, shapes[2],
+            [20, 20], 0, 1
+        ],
+        ["opacity", baseColor, 6, true, "circle_filled", [20, 20], 0, 0.1],
+        ["shape", baseColor, 4, true, shapes[3],
+            [20, 20], 0, 1
+        ],
+        ["dummy", baseColor, 7, false, "circle_filled", [20, 20], 0, 1],
+        ["shape", baseColor, 5, true, shapes[4],
+            [20, 20], 0, 1
+        ],
+        ["motion", baseColor, 2, true, "motion", [20, 20], 0, 1],
+        ["shape", baseColor, 6, true, shapes[5],
+            [20, 20], 0, 1
+        ],
+        ["shape", baseColor, 1, true, shapes[6],
+            [20, 20], 0, 1
+        ],
+        ["size", baseColor, 6, true, "circle_filled", [29.64, 29.64], 0, 1],
+        ["blur", baseColor, 6, true, "circle_filled", [20, 20], 3, 1],
+        ["color", [0, 0, 255], 3, true, "circle_filled", [20, 20], 0, 1],
+    ]
+
+    var initialSelection = 0;
+
+    $(document).ready(function() {
+        // Parse the query variables
+        t = new Date();
+        query = window.location.search;
+        if (query.substring(0, 1) == '?')
+            query = query.substring(1);
+        userId = parseInt(query.substring(0, query.indexOf("&")));
+
+        // Establish the display layout
+        var d = query.substring(query.indexOf("-d=") + 3);
+        size = 20; //visualAngleToPixels(2.0,parseFloat(d*24), document.getElementById("dpi").offsetHeight)/2;
+        gap = visualAngleToPixels(6.0, 30, 96) / 2;
+        /*if (2*size + gap > $("#stimulus").width) {
+        	$("#stimulus").width(2*size + gap);
+        }*/
+        $("#stimulus").height(400);
+        //			var w = $("#stimulus").width();
+        var width = 4 * gap + 2 * GRID_PAD + size;
+        start1 = width * 0.5 - 0.5 * gap;
+        start2 = gap + 20 + start1;
+        trial = 0;
+
+        // Instantiate the input
+        $(this).keyup(function(evt) {
+            console.log(evt)
+            if (evt.which == 69) { //used to be 70
+                resp = 0
+                console.log(respInt)
+                clearInterval(respInt);
+                // This is in Stimuli.js. For flickering the blank screen
+                adapt(false);
+            }
+            if (evt.which == 78) { //used to be 74
+                resp = 1;
+                clearInterval(respInt);
+                adapt(false);
+            }
+        });
+
+        colorType = COLORTYPE.Lab;
+        drawStimulus(trial_array[initialSelection][1], trial_array[initialSelection][2], trial_array[initialSelection][3], trial_array[initialSelection][4], trial_array[initialSelection][5], trial_array[initialSelection][6])
+
+    });
+
+
+
+    var drawStimulus = function(target, level, showTarget, shape, targetSize, distractorBlur) {
+
+        var width = 4 * gap + 2 * GRID_PAD + 2 * size,
+            height = $("#stimulus").height();
+
+        controlWidth = width;
+
+        console.log("witdh: " + width)
+        start1 = generateRandom(10, width - 110) //making position random
+        generatePositions(start1, start2, target, gap, shape, targetSize);
+
+        // Remove any existing SVG on the page
+        d3.select("svg").remove();
+
+        var svg = d3.select("body").select("div #stimulus")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        center = 0.5 * width;
+
+        //stuff for filters
+        var defs = svg.append("defs");
+
+
+        var dropShadowFilter = defs.append('svg:filter')
+            .attr('id', 'drop-shadow')
+            .attr('filterUnits', "userSpaceOnUse")
+            .attr('width', '250%')
+            .attr('height', '250%');
+        dropShadowFilter.append('svg:feGaussianBlur')
+            .attr('in', 'SourceGraphic')
+            .attr('stdDeviation', distractorBlur)
+            .attr('result', 'blur-out');
+
+
+
+
+        var data = [10, 15, 20, 25, 30];
+
+        var xscale = d3.scaleLinear()
+            .domain([0, d3.max(data)])
+            .range([5, width - 5]);
+
+        var yscale = d3.scaleLinear()
+            .domain([0, d3.max(data)])
+            .range([height - GRID_PAD, 0]);
+
+
+        var x_axis = d3.axisBottom()
+            .scale(xscale);
+
+        var y_axis = d3.axisLeft()
+            .scale(yscale);
+
+        x_axis.tickFormat((d, i) => ' ');
+
+        // Add y-axis
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(5, 0)")
+            .call(y_axis);
+
+        // Add X-axis
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (height - GRID_PAD + 1) + ")")
+            .call(x_axis);
+
+        renderSingleMark(svg);
+
+
+    }
+
+
+    function normal(mu, sigma, nsamples) {
+        if (!nsamples) nsamples = 6
+        if (!sigma) sigma = 1
+        if (!mu) mu = 0
+
+        var run_total = 0
+        for (var i = 0; i < nsamples; i++) {
+            run_total += Math.random()
+        }
+
+        return sigma * (run_total - nsamples / 2) / (nsamples / 2) + mu
+    };
+
+    // The maximum is exclusive and the minimum is inclusive
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    function intersect(p1, p2, r) {
+        return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2)) < r;
+    };
+
+
+    function buildPosition(h, x, y, c, p, l, shape) {
+        distractors.push(h);
+        return [
+            [adjustedSize[0], h],
+            c.slice(0),
+            x,
+            y,
+            p,
+            l,
+            shape
+        ];
+    };
+
+
+
+    var generatePositions = function(x1, x2, c1, gap, shape, targetSize) {
+        var rightX = x1;
+        var leftX = x2;
+        var height = Math.abs(normal(.5, 1.0, 10) * $("#stimulus").height() - 10);
+
+        var numDistractors = Math.pow(700 * 400 / (400), 1.0 / 3.0);
+        var distractorColor = [50, 0, 0];
+
+        // Check for overdraw and don't draw if there is any with the target points
+        var points = [
+            [leftX, $("#stimulus").height() / 2 - 20],
+            [rightX, $("#stimulus").height() / 2 - 20]
+        ];
+        for (var i = 0; i < numDistractors; i++) {
+            // Pick coords
+            var x = getRandomInt(50, 350);
+            var y = getRandomInt(50, 300);
+
+            // Check for conflict
+            var intersectsPoint = false;
+            for (var p = 0; p < points.length; p++) {
+                intersectsPoint = intersect(points[p], [x, y], 20) || intersectsPoint;
+                if (intersectsPoint) {
+                    break;
+                }
+            }
+
+            if (!intersectsPoint) {
+                positions.push(buildPosition(adjustedSize[0], x, y, distractorColor.slice(0), 0, 0, "circle"));
+                points.push([x, y]);
+            }
+        }
+
+        //check if trial is showTrial
+        targetX = rightX;
+        targetY = $("#stimulus").height() / 2 - 20;
+
+        positions.push([
+            targetSize, // Size
+            c1.slice(0), // Color
+            rightX, // X
+            $("#stimulus").height() / 2 - 20, // Y
+            0, // Not used
+            0, // Position of the fixed (non-jittered color)
+            shape
+        ]);
+
+    }
+
+
+    var logResponse = function() {
+        // Fetch the current slider color
+        var curColor = color.slice(0);
+        if (resp == 0) {
+            var rating = prompt('Please rate how different the emphasized point was from the other points (e.g., if it was a different color, how different), ' +
+                'on a 1-7 scale, where 1 = just slightly different, and 7 = very different.')
+        }
+
+
+        // Set the screen to grey to avoid afterimage effects
+        d3.selectAll("circle").remove();
+        d3.selectAll("rect").remove();
+        d3.select("div #stimuli").select("svg")
+            .append("rect")
+            .attr("width", function() {
+                return (2 * proximity + 2 * GRID_PAD + 4 * LARGEST_SIZE);
+
+            })
+            .attr("height", function() {
+                return (2 * proximity + 2 * GRID_PAD + 2 * LARGEST_SIZE);
+            })
+            .attr("x", 0)
+            .attr("fill", "rgb(200,200,200)");
+
+        positions = [];
+
+        clearInterval(respInt);
+
+        console.log("trial" + trial)
+            //3 and 8 are dummy
+        if (trial == 3 || trial == 8) {
+            //dummy trials, should anser NO (resp == 1)
+            if (resp == 0) {
+                alert("Incorrect.  Press the 'E' key if a point appears to be emphasized (that is, appears to be different to the rest) and the 'N' key if there is no emphasized point.");
+                //trial--;
+            } else {
+                alert("Correct.");
+                trial++;
+                initialSelection++;
+            }
+        } else {
+            //real trials, should answer YES, resp == o
+            if (resp == 0) {
+                alert("Correct.");
+                if (trial == 15) {
+                    alert("Press 'OK' to exit this window and begin the study.");
+                    postResponseValues(resp);
+                }
+                trial++;
+                initialSelection++;
+            } else {
+                alert("Incorrect.  Press the 'E' key if a point appears to be emphasized (that is, appears to be different to the rest) and the 'N' key if there is no emphasized point.");
+                //trial--;
+            }
+        }
+
+
+
+        console.log("trial " + trial);
+        $("#foo").html("You have completed " + trial + " of 16 practice trials");
+        drawStimulus(trial_array[trial][1], trial_array[trial][2], trial_array[trial][3], trial_array[trial][4], trial_array[trial][5], trial_array[trial][6])
+
+    };
+
+    var postResponseValues = function(response) {
+        var practiceResult = {
+            response: resp
+        };
+        $.post("#", practiceResult).then(function() {
+            // I NEED TO MOVE TO THE NEXT PAGE HERE (E.G., FOR NOW, END)
+
+            window.location.href = "/redirect_next_page";
+        })
+    };
+</script>
+
+
+
+{% endblock %}

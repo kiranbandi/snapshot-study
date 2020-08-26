@@ -10,16 +10,43 @@ my_blueprint = Blueprint('my_blueprint', __name__,
                          template_folder='templates',
                          static_folder='static')
 
-
-@my_blueprint.route("/debrief", methods=['POST', 'GET'])
+# practice page
+@my_blueprint.route("/practice", methods=['POST', 'GET'])
 @verify_correct_page
 @verify_session_valid
-def debrief():
-    incorrect = None
+def study_results():
+    if request.method == 'POST':
+        log = db.snapshot()
+        log.participantID = session['participantID']
+        log.trialStart = request.form['trialStart']
+        log.trialEnd = request.form['trialEnd']
+        log.trialTime = request.form['trialTime']
+        log.stimuli = request.form['stimuli']
+        #log.stimuliColor = request.form['stimuliColor']
+        log.userRating = request.form['userRating']
+        log.level = request.form['level']
+        log.targetPresent = request.form['targetPresent']
+        log.targetShape = request.form['targetShape']
+        log.targetSize = request.form['targetSize']
+        log.targetX = request.form['targetX']
+        log.targetY = request.form['targetY']
+        log.distanceFromCenter = request.form['distanceFromCenter']
+        log.distractorBlur = request.form['distractorBlur']
+        log.distractorOpacity = request.form['distractorOpacity']
+        log.response = request.form['response']
+        log.correct = request.form['correct']
+        db.session.add(log)
+        db.session.commit()
+    return render_template("study.html", example="This is example text.")
 
-    return render_template("debrief.html", example="This is example text.")
+# prestudy
+@my_blueprint.route("/pre-study", methods=['POST', 'GET'])
+@verify_correct_page
+@verify_session_valid
+def pre_study():
+    return render_template("pre-study.html", example="This is example text.")
 
-
+# study page
 @my_blueprint.route("/study", methods=['POST', 'GET'])
 @verify_correct_page
 @verify_session_valid
@@ -48,8 +75,15 @@ def study_results():
         db.session.commit()
     return render_template("study.html", example="This is example text.")
 
-
-
+# debrief
+@my_blueprint.route("/debrief", methods=['POST', 'GET'])
+@verify_correct_page
+@verify_session_valid
+def debrief():
+    incorrect = None
+    return render_template("debrief.html", example="This is example text.")
+    
+# route to view the database records and export them
 @my_blueprint.route("/analysis")
 @verify_admin
 def analysis():
