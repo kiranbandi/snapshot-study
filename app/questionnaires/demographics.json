@@ -87,7 +87,7 @@
         },
         {
             "questiontype": "field",
-            "instructions": "Please enter the number of times per month you view or work with Network or tree diagrams",
+            "instructions": "Please enter the number of times per month you view or work with Network or Tree Diagrams",
             "decimals": 0,
             "width": 60,
             "min": 0,
@@ -96,7 +96,7 @@
         },
         {
             "questiontype": "field",
-            "instructions": "Please enter the number of times per month you view or work with other types not listed.",
+            "instructions": "Please enter the number of times per month you view or work with other types of visualizations that are not listed.",
             "decimals": 0,
             "width": 60,
             "min": 0,

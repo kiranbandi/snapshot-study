@@ -14,7 +14,7 @@ my_blueprint = Blueprint('my_blueprint', __name__,
 @my_blueprint.route("/practice", methods=['POST', 'GET'])
 @verify_correct_page
 @verify_session_valid
-def study_results():
+def practice_results():
     if request.method == 'POST':
         log = db.snapshot()
         log.participantID = session['participantID']
@@ -37,7 +37,7 @@ def study_results():
         log.correct = request.form['correct']
         db.session.add(log)
         db.session.commit()
-    return render_template("study.html", example="This is example text.")
+    return render_template("practice.html", example="This is example text.")
 
 # prestudy
 @my_blueprint.route("/pre-study", methods=['POST', 'GET'])
@@ -82,7 +82,7 @@ def study_results():
 def debrief():
     incorrect = None
     return render_template("debrief.html", example="This is example text.")
-    
+
 # route to view the database records and export them
 @my_blueprint.route("/analysis")
 @verify_admin

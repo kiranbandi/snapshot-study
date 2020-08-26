@@ -7,9 +7,9 @@ def create(db):
         trialStart = db.Column(db.String)
         trialEnd = db.Column(db.String)
         trialTime = db.Column(db.String)
-        studyMode: db.Column(db.String),
-        questionNumber: db.Column(db.String),
-        response: db.Column(db.String),
+        studyMode: db.Column(db.String)
+        questionNumber: db.Column(db.String)
+        response: db.Column(db.String)
         correct: db.Column(db.String)
 
     return snapshot
