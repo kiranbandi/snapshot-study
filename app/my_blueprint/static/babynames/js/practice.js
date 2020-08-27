@@ -26,7 +26,7 @@ var currentQuestions = [{
     "type": "number",
     "answer": "james"
 }, {
-    "label": "In the year 1990 what the rank of girl's name AMANDA. (use the snapshot you created for AMANDA to quickly switch instead of searching for AMANDA again)?",
+    "label": "In the year 1990 what was the rank of girl's name AMANDA. (use the snapshot you created for AMANDA to quickly switch instead of searching for AMANDA again)?",
     "type": "number",
     "answer": "4"
 }, {
@@ -201,7 +201,7 @@ function storeSnapshotTriggered(snapshotData) {
     if (waitingMode == 'store-snapshot' && !!snapshotData.name) {
         // trigger information box
         Swal.fire({
-            'text': "Perfect, you have created your first snapshot. Now reset the chart by clicking the reset button. Then click on the snapshot that you created earlier in the snapshot panel. ",
+            'text': "Perfect, you have created your first snapshot. You can click on it to go that state. Now reset the chart by clicking the reset button. Then click on the snapshot that you created earlier inside the snapshot panel. ",
             confirmButtonText: 'Next &rarr;',
             showCancelButton: false,
             allowOutsideClick: false
