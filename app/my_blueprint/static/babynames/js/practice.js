@@ -18,19 +18,19 @@ var currentQuestions = [{
     "type": "boolean",
     "answer": "no"
 }, {
-    "label": "In the year 1940 what was the position of boy's name JOHN?",
+    "label": "In the year 1940 what was the rank of boy's name JOHN?",
     "type": "number",
     "answer": "3"
 }, {
-    "label": "In the decade between 1940 and 1950 what was the most popular boy's name (position number 1)?",
+    "label": "In the decade between 1940 and 1950 what was the most popular boy's name (rank number 1)?",
     "type": "number",
     "answer": "james"
 }, {
-    "label": "In the year 1990 what the position of girl's name AMANDA. (use the snapshot you created for AMANDA to quickly switch instead of searching for AMANDA again)?",
+    "label": "In the year 1990 what the rank of girl's name AMANDA. (use the snapshot you created for AMANDA to quickly switch instead of searching for AMANDA again)?",
     "type": "number",
     "answer": "4"
 }, {
-    "label": "What was the highest position ever achieved by the girl's name CAROL? (where 1 is the highest position and 10 the lowest)",
+    "label": "What was the highest rank ever achieved by the girl's name CAROL? (where 1 is the highest rank and 10 the lowest)",
     "type": "boolean",
     "answer": "4"
 }]
@@ -49,7 +49,7 @@ Swal.mixin({
         text: 'You can search for over 50 plus unique boy and girl names that have entered the top 10 in the last 135 years and see their rise and fall. '
     },
     {
-        text: 'Every name is represented by a line and line thickness stands for the highest position ever reached by a name'
+        text: 'Every name is represented by a line and line thickness stands for the highest rank ever reached by a name'
     },
     {
         text: 'Click on a name line or search for it to see its full reign in the top 10. To cancel your selection click the reset button.'
