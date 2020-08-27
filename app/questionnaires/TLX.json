@@ -1,7 +1,7 @@
 {
     "title": "TLX",
     "instructions": "",
-    "code": "",
+    "code": "<style>.evenRow>td:nth-child(1) {width: 0.5% !important;}</style>",
     "questions": [{
             "questiontype": "radiogrid",
             "instructions": "Mental Demand<div style='font-weight: normal;'>How much mental and perceptual activity was required (e.g., thinking, deciding, calculating, remembering, looking, searching, etc.)? Was the task easy or demanding, simple or complex, forgiving or exacting?</div>",

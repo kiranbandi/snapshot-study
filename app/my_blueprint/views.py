@@ -63,10 +63,8 @@ def debrief():
 @my_blueprint.route("/analysis")
 @verify_admin
 def analysis():
-    results = db.session.query(
-            db.Participant.participantID,
-            db.func.count(db.MyTable.ID).label('tries')
-        ).\
+    results = db.session.query( db.Participant.participantID,
+            db.func.count(db.MyTable.ID).label('tries')).\
         join(db.MyTable, db.MyTable.participantID == db.Participant.participantID).\
         filter(db.Participant.finished).\
         group_by(db.MyTable.participantID)
