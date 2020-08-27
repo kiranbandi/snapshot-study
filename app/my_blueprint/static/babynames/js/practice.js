@@ -15,7 +15,7 @@ var currentQuestions = [{
         "type": "number",
         "answer": "james"
     }, {
-        "label": "In the year 1990 what the rank of girl's name AMANDA?",
+        "label": "In the year 1990 what was the rank of girl's name AMANDA?",
         "type": "number",
         "answer": "4"
     },
