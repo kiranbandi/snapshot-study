@@ -21,14 +21,14 @@ var countOfNameSearch = 0;
 
 var gender = "girls";
 
-// window.snapshot.initializeSnapshot(false, 1000, {
-//         'class': '.focus>svg',
-//         'type': 'svg',
-//         'size': { 'width': 250, 'height': 100 }
-//     },
-//     (data) => {
-//         changeName(data.name, data.sex);
-//     }, false);
+window.snapshot.initializeSnapshot(false, 1000, {
+        'class': '.focus>svg',
+        'type': 'svg',
+        'size': { 'width': 250, 'height': 100 }
+    },
+    (data) => {
+        changeName(data.name, data.sex);
+    }, false);
 
 var color = (gender === "boys" ? colorBoys : colorGirls);
 var namesByID = (gender === "boys" ? boyNamesByID : girlNamesByID);
@@ -585,7 +585,7 @@ function searchEvent(name) {
             .style("opacity", null)
             .style("stroke", function(c) { return "url(#line-gradient-" + gender + "-" + c.name + ")"; });
     } //else
-    // window.snapshot.updateSnapshot({ 'name': name, 'years': brush.extent(), 'sex': gender })
+    window.snapshot.updateSnapshot({ 'name': name, 'years': brush.extent(), 'sex': gender })
 } //searchEvent
 
 ////////////////////////////////////////////////////////////// 

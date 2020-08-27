@@ -20328,7 +20328,11 @@
 	            .appendTo('.snapshot-custom-wrapper')
 	            .on('click', function(event) {
 	                event.preventDefault();
-	                event.stopPropagation();
+                    event.stopPropagation();
+                    
+                   
+
+
 	                if (isAutoModeON) {
 	                    // timer is off at the moment so trigger it ON
 	                    if (!isTimerON) {
@@ -20344,41 +20348,46 @@
 	                snapshot.storeSnapshot();
 	            });
 
-	        let clearSnapshotButton = cash('<button class="snapshot-clear">clear</button>')
-	            .css({
-	                'text-align': ' center',
-	                'vertical-align': ' middle',
-	                'cursor': ' pointer',
-	                'background-image': ' none',
-	                'border': ' 1px solid transparent',
-	                'padding': ' 6px 12px',
-	                'font-size': ' 14px',
-	                'line-height': ' 1.5',
-	                'border-radius': ' 4px',
-	                '-webkit-user-select': ' none',
-	                '-moz-user-select': ' none',
-	                '-ms-user-select': ' none',
-	                'user-select': ' none',
-	                'color': ' #1997c6',
-	                'background-color': ' transparent',
-	                'border-color': ' #1997c6',
-	                'margin': ' 10px auto',
-	                'display': 'inline-block',
-	                'text-transform': ' uppercase',
-	                'margin-left': '5px'
-	            })
-	            .appendTo('.snapshot-custom-wrapper')
-	            .on('click', function(event) {
-	                event.preventDefault();
-	                event.stopPropagation();
-	                Object.keys(datastore)
-	                    .map(function(d) {
-	                        delete datastore[d];
-	                        cash('#' + d).remove();
-	                    });
-	                currentData = {};
-	                triggeredData = {};
-	            });
+	        // let clearSnapshotButton = cash('<button class="snapshot-clear">clear</button>')
+	        //     .css({
+	        //         'text-align': ' center',
+	        //         'vertical-align': ' middle',
+	        //         'cursor': ' pointer',
+	        //         'background-image': ' none',
+	        //         'border': ' 1px solid transparent',
+	        //         'padding': ' 6px 12px',
+	        //         'font-size': ' 14px',
+	        //         'line-height': ' 1.5',
+	        //         'border-radius': ' 4px',
+	        //         '-webkit-user-select': ' none',
+	        //         '-moz-user-select': ' none',
+	        //         '-ms-user-select': ' none',
+	        //         'user-select': ' none',
+	        //         'color': ' #1997c6',
+	        //         'background-color': ' transparent',
+	        //         'border-color': ' #1997c6',
+	        //         'margin': ' 10px auto',
+	        //         'display': 'inline-block',
+	        //         'text-transform': ' uppercase',
+	        //         'margin-left': '5px'
+	        //     })
+	        //     .appendTo('.snapshot-custom-wrapper')
+	        //     .on('click', function(event) {
+	        //         event.preventDefault();
+            //         event.stopPropagation();
+                    
+            //            // trigger study clear call
+            //            clearSnapshotTriggered();
+
+
+	        //         Object.keys(datastore)
+	        //             .map(function(d) {
+	        //                 delete datastore[d];
+	        //                 cash('#' + d).remove();
+	        //             });
+	        //         currentData = {};
+	        //         triggeredData = {};
+	        //     });
 
 	        if (replayAvailable) {
 	            let playPlauseButton = cash('<button class="story-mode">&#x25B6;</button>')
@@ -20477,7 +20486,13 @@
 	                const data = datastore[uniqueCode];
 	                // store seperately so self triggerring doesnt occur
 	                triggeredData = lodash.cloneDeep(data);
-	                if (data) { onRecall(data); }
+	                if (data) { 
+                      // trigger study recall call
+                      recallSnapshotTriggered(data);
+                    
+                        onRecall(data);
+                    
+                    }
 	            } else if (targetName.indexOf('snapshot-edit') > -1) {
 
 	                // trigger an option to ed``it the snapshot tag.
@@ -20486,6 +20501,11 @@
 	                cash('#' + uniqueCode + ' > .snapshot-label').text(newLabel);
 
 	            } else {
+
+                      // trigger study delete call
+                      deleteSnapshotTriggered();
+                    
+
 	                delete datastore[uniqueCode];
 	                delete labelstore[uniqueCode];
 	                cash('#' + uniqueCode).remove();
@@ -20510,22 +20530,22 @@
 	        })
 	        .appendTo(imageButton);
 
-	    cash('<div class="snapshot-edit">&#128393;</div>')
-	        .css({
-	            'background': ' white',
-	            'border-radius': ' 10px',
-	            'width': ' 20px',
-	            'position': ' absolute',
-	            'right': ' 2px',
-	            'top': ' 27.5px',
-	            'color': ' black',
-	            'opacity': ' 1',
-	            'float': ' right',
-	            'font-size': ' 21px',
-	            'font-weight': ' bold',
-	            'line-height': ' 1'
-	        })
-	        .appendTo(imageButton);
+	    // cash('<div class="snapshot-edit">&#128393;</div>')
+	    //     .css({
+	    //         'background': ' white',
+	    //         'border-radius': ' 10px',
+	    //         'width': ' 20px',
+	    //         'position': ' absolute',
+	    //         'right': ' 2px',
+	    //         'top': ' 27.5px',
+	    //         'color': ' black',
+	    //         'opacity': ' 1',
+	    //         'float': ' right',
+	    //         'font-size': ' 21px',
+	    //         'font-weight': ' bold',
+	    //         'line-height': ' 1'
+	    //     })
+	    //     .appendTo(imageButton);
 
 	    cash('<div class="snapshot-label">' + labelstore[snapshotID] + '</div>')
 	        .css({
@@ -20559,7 +20579,11 @@
 	snapshot.storeSnapshot = function() {
 	    let isNewSnapshotAvailable = !playModeON && !!currentData && !lodash.isEqual(stackedSnapshot, currentData) && !lodash.isEqual(triggeredData, currentData);
 	    // store current data in snapshot
-	    let snapshotData = currentData;
+        let snapshotData = currentData;
+        
+         // trigger study store call
+         storeSnapshotTriggered(snapshotData);
+
 	    // clear currentData
 	    currentData = false;
 	    // clear trigger 

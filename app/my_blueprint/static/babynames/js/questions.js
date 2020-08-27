@@ -32,7 +32,7 @@ var studyQuestions = {
         "type": "boolean",
         "answer": "no"
     }, {
-        "label": "In which year did the popularity of the name TYLER dip significantly and then rise again?",
+        "label": "In which year did the popularity of the name TYLER dip significantly and then rise again subsequently?",
         "type": "text",
         "answer": "1997"
     }, {
@@ -93,7 +93,7 @@ var studyQuestions = {
         "type": "boolean",
         "answer": "no"
     }, {
-        "label": "In which year did the popularity of the name TYLER dip significantly and then rise again?",
+        "label": "In which year did the popularity of the name TYLER dip significantly and then rise again subsequently?",
         "type": "text",
         "answer": "1997"
     }, {

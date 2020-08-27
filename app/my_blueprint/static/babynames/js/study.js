@@ -1,10 +1,16 @@
 var trialStartTime;
 var qOrder = 0;
-var currentQuestions = studyQuestions['no-snapshot'];
+var currentQuestions = studyQuestions['snapshot'];
+
+countOfAllSnapshots = 0;
+
+countOfSnapshotClick = 0;
+countOfSnapshotCreated = 0;
+countOfSnapshotDeleted = 0;
 
 // trigger information box
 Swal.fire({
-    title: "The study will now begin.",
+    title: "The study will now begin. Consider creating a snapshot every time you search a name to answer a question. This will make it easier to answer questions about repeated names.",
     confirmButtonText: 'START',
     showCancelButton: false,
     allowOutsideClick: false,
@@ -46,8 +52,12 @@ var logResponse = function(user_answer) {
         questionNumber: qOrder + 1,
         response: user_answer,
         correct: checkAnswer(user_answer),
-        snapshotMode: 'nosnap',
-        nameSearchCount: countOfNameSearch
+        snapshotMode: 'snap',
+        nameSearchCount: countOfNameSearch,
+        snapshotCreatedCount: countOfSnapshotCreated,
+        snapshotDeletedCount: countOfSnapshotDeleted,
+        snapshotRecalledCount: countOfSnapshotClick,
+        snapshotAllCount: countOfAllSnapshots
     };
     console.log("logging response for study question - ", qOrder);
     $.post("#", trialResult).then(function() {
@@ -55,7 +65,7 @@ var logResponse = function(user_answer) {
         $("#study-trigger").text('ANSWER');
         qOrder += 1;
         if (qOrder == 15) {
-            alert('Your study round is complete. This page will now automatically close and you will be redirected to the debriefing page.');
+            alert('Your study round is complete. This page will now automatically close and you will be redirected to the next page to answer some questions.');
             window.location.href = "/redirect_next_page";
         } else {
             showQuestion();
@@ -66,11 +76,33 @@ var logResponse = function(user_answer) {
 
 var showQuestion = function() {
     trialStartTime = new Date();
-    countOfNameSearch = 0;
+    clearCount();
     $('#study-question').text(currentQuestions[qOrder].label);
     $("#study-trigger").text('ANSWER');
 }
 
 var checkAnswer = function(value) {
     return value.trim().toLocaleLowerCase() == currentQuestions[qOrder].answer;
+}
+
+
+function deleteSnapshotTriggered() {
+    countOfSnapshotDeleted = countOfSnapshotDeleted + 1;
+    countOfAllSnapshots = countOfAllSnapshots - 1;
+}
+
+function storeSnapshotTriggered(snapshotData) {
+    countOfSnapshotCreated = countOfSnapshotCreated + 1;
+    countOfAllSnapshots = countOfAllSnapshots + 1;
+}
+
+function recallSnapshotTriggered() {
+    countOfSnapshotClick = countOfSnapshotClick + 1;
+}
+
+function clearCount() {
+    countOfNameSearch = 0;
+    countOfSnapshotClick = 0;
+    countOfSnapshotCreated = 0;
+    countOfSnapshotDeleted = 0;
 }

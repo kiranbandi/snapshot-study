@@ -26,7 +26,11 @@ def practice_results():
         log.response=request.form['response']
         log.correct=request.form['correct']
         log.snapshotMode=request.form['snapshotMode']
-        log.nameSearchCount=request.form['nameSearchCount']
+        log.nameSearchCount=request.form['nameSearchCount']        
+        log.snapshotCreatedCount = request.form['snapshotCreatedCount']
+        log.snapshotDeletedCount = request.form['snapshotDeletedCount']
+        log.snapshotRecalledCount = request.form['snapshotRecalledCount']
+        log.snapshotAllCount = request.form['snapshotAllCount']
         db.session.add(log)
         db.session.commit()
     return render_template("practice.html", example="This is example text.")
@@ -48,6 +52,10 @@ def study_results():
         log.correct=request.form['correct']
         log.snapshotMode=request.form['snapshotMode']
         log.nameSearchCount=request.form['nameSearchCount']
+        log.snapshotCreatedCount = request.form['snapshotCreatedCount']
+        log.snapshotDeletedCount = request.form['snapshotDeletedCount']
+        log.snapshotRecalledCount = request.form['snapshotRecalledCount']
+        log.snapshotAllCount = request.form['snapshotAllCount']
         db.session.add(log)
         db.session.commit()
     return render_template("study.html", example="This is example text.")
