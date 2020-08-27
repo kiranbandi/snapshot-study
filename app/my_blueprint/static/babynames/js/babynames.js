@@ -260,7 +260,7 @@ focus.append("g")
     .attr("dy", ".71em")
     .style("font-size", 14)
     .style("text-anchor", "middle")
-    .text("Position in Top 10");
+    .text("rank in Top 10");
 
 ////////////////////////////////////////////////////////////// 
 //////////////////////// Tooltip ///////////////////////////// 
