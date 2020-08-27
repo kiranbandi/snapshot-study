@@ -3,22 +3,28 @@ var qOrder = 0;
 countOfNameSearch = 0;
 
 var currentQuestions = [{
-    "label": "Was the girl's name AMANDA popular(ranked in top 10) in the year 2005? (answer with yes or no)",
-    "type": "boolean",
-    "answer": "no"
-}, {
-    "label": "In the year 1940 what was the position of boy's name JOHN?",
-    "type": "number",
-    "answer": "3"
-}, {
-    "label": "In the decade between 1940 and 1950 what was the most popular boy's name?",
-    "type": "number",
-    "answer": "james"
-}, {
-    "label": "What was the highest position ever achieved by the girl's name CAROL? (where 1 is the highest position and 10 the lowest)",
-    "type": "boolean",
-    "answer": "4"
-}]
+        "label": "Was the girl's name AMANDA popular(ranked in top 10) in the year 2005? (answer with yes or no)",
+        "type": "boolean",
+        "answer": "no"
+    }, {
+        "label": "In the year 1940 what was the rank of boy's name JOHN?",
+        "type": "number",
+        "answer": "3"
+    }, {
+        "label": "In the decade between 1940 and 1950 what was the most popular boy's name?",
+        "type": "number",
+        "answer": "james"
+    }, {
+        "label": "In the year 1990 what the rank of girl's name AMANDA?",
+        "type": "number",
+        "answer": "4"
+    },
+    {
+        "label": "What was the highest rank ever achieved by the girl's name CAROL? (where 1 is the highest rank and 10 the lowest)",
+        "type": "boolean",
+        "answer": "4"
+    }
+]
 
 // trigger information box
 Swal.mixin({
@@ -34,7 +40,7 @@ Swal.mixin({
         text: 'You can search for over 50 plus unique boy and girl names that have entered the top 10 in the last 135 years and see their rise and fall. '
     },
     {
-        text: 'Every name is represented by a line and line thickness stands for the highest position ever reached by a name'
+        text: 'Every name is represented by a line and line thickness stands for the highest rank ever reached by a name'
     },
     {
         text: 'Click on a name line or search for it to see its full reign in the top 10. To cancel your selection click the reset button.'
@@ -99,7 +105,7 @@ var logResponse = function(user_answer) {
         // after results are posted 
         $("#study-trigger").text('ANSWER');
         qOrder += 1;
-        if (qOrder == 4) {
+        if (qOrder == 5) {
             alert('Your practice round is complete. This page will now automatically close and you will be redirected to the study page.');
             window.location.href = "/redirect_next_page";
         } else {
