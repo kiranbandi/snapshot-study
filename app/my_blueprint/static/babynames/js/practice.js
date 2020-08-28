@@ -126,7 +126,8 @@ $("#study-trigger").on('click', function() {
                 confirmButtonText: 'Go'
             });
             // hide question box
-            $(".study-question-box").hide();
+            $('#study-question').text("Lets try this out. First click on any line in the chart. Then after you are done, click on the snapshot button.");
+            $("#study-trigger").hide();
 
         })
     } else {
@@ -175,7 +176,7 @@ var logResponse = function(user_answer) {
 
 var showQuestion = function() {
     // show question box if it is hidden
-    $(".study-question-box").show();
+    $(".study-trigger").show();
     trialStartTime = new Date();
     clearCount();
     $('#study-question').text(currentQuestions[qOrder].label);
@@ -207,6 +208,8 @@ function storeSnapshotTriggered(snapshotData) {
             allowOutsideClick: false
         });
         waitingMode = 'recall-snapshot';
+
+        $('#study-question').text("Now first reset the chart by clicking the reset button, then click on the snapshot that you created earlier inside the snapshot panel.");
     }
 }
 
@@ -245,9 +248,8 @@ function recallSnapshotTriggered() {
                     text: 'Before we get started with the practice round. Try dragging the snapshot panel. Place it in a position that you prefer the most. Then click on the start practice button.',
                     confirmButtonText: 'OK'
                 });
-                // hide question box
-                $(".study-question-box").show();
-                $('#study-question').text("Drag the snapshot panel by clicking on it and then dragging your mouse. Move it to a place that you prefer then clicking on the START PRACTICE button");
+                $("#study-trigger").show();
+                $('#study-question').text("Drag the snapshot panel by clicking on it and then dragging your mouse. Move it to a place that you prefer the most.  Then click on the start practice button.");
                 $("#study-trigger").text('START PRACTICE');
             })
         }, 1000);
