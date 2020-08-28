@@ -3,12 +3,16 @@ var qOrder = 0;
 countOfNameSearch = 0;
 
 countOfAllSnapshots = 0;
-
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
 
-var waitingMode = 'store-snapshot';
+// hide other unused snapshot toggles
+$("#snapshot-mode-checkbox").hide();
+$("label[for='snapshot-mode-checkbox']").hide();
+$('.snapshot-trigger').hide();
+
+var waitingMode = 'recall-snapshot';
 
 // First hide the snapshot panel 
 $(".snapshot-custom-wrapper").hide();
@@ -26,7 +30,7 @@ var currentQuestions = [{
     "type": "number",
     "answer": "james"
 }, {
-    "label": "In the year 1990 what was the rank of girl's name AMANDA. (use the snapshot you created for AMANDA to quickly switch instead of searching for AMANDA again)?",
+    "label": "In the year 1990 what was the rank of girl's name AMANDA. (use the snapshot created for AMANDA to quickly switch instead of searching for AMANDA again)?",
     "type": "number",
     "answer": "4"
 }, {
@@ -85,7 +89,7 @@ $("#study-trigger").on('click', function() {
 
                 if (qOrder == 0) {
                     Swal.fire({
-                        text: 'Now that you have searched for AMANDA. click on the snapshot button to create a snapshot so that it can be used when a question regarding AMANDA comes up again.',
+                        text: 'Notice the snapshot that was created in the snapshot panel when you searched for AMANDA. Click on it to quickly switch when a question regarding AMANDA comes up again.',
                         confirmButtonText: 'OK'
                     })
                 }
@@ -109,24 +113,27 @@ $("#study-trigger").on('click', function() {
                 text: 'This is a special panel that can be found in the top left corner of the page. You can move it to wherever you want by clicking on it and dragging it.'
             },
             {
-                text: 'When you interact with the visualization by clicking on a line or searching for a name you have performed a unique action'
+                text: 'When you interact with the visualization by clicking on a line or searching for a name you perform a unique action.'
             },
             {
-                text: 'The snapshot panel tracks these actions and can be used to create snapshots of the visualization at that point in time. You can then click on these snapshots to recreate your action.'
+                text: 'The snapshot panel automatically tracks these actions and creates snapshots of the visualization at that point in time. You can then click on these snapshots to recreate your action.'
             },
             {
-                text: 'For example, searching for the name EMMA or clicking on the line representing the name EMMA is an action. After you have done this once, you can then click on the snapshot button and it will create a saved snapshot of that action.'
+                text: 'For example, searching for the name EMMA or clicking on the line representing the name EMMA is an action. After you have completed this action a snapshot for EMMA is created automatically.'
             },
             {
                 text: "Then in future when you need to search for EMMA again you dont need to type in EMMA in the search bar but can instead simply click on the snapshot EMMA and the system will automatically recreate the snapshot for you."
             }
         ]).then(() => {
+            // fire of the snapshot study
+            $('.snapshot-trigger').click();
+
             Swal.fire({
-                text: 'Lets try this out. First click on any line in the chart. Then after you are done, click on the snapshot button.',
+                text: 'Lets try this out. First click on any line in the chart. Then after you are done you will notice that a snapshot has been automatically created for the name you searched. Now reset the chart and then click on the snapshot.',
                 confirmButtonText: 'Go'
             });
             // hide question box
-            $('#study-question').text("Lets try this out. First click on any line in the chart. Then after you are done, click on the snapshot button.");
+            $('#study-question').text("First click on any line in the chart. Then after you are done you will notice that a snapshot has been automatically created for the name you searched. Now reset the chart and then click on the snapshot.");
             $("#study-trigger").hide();
 
         })
@@ -150,7 +157,7 @@ var logResponse = function(user_answer) {
         questionNumber: qOrder + 1,
         response: user_answer,
         correct: checkAnswer(user_answer),
-        snapshotMode: 'snap',
+        snapshotMode: 'autosnap',
         nameSearchCount: countOfNameSearch,
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
@@ -195,22 +202,8 @@ function deleteSnapshotTriggered() {
 }
 
 function storeSnapshotTriggered(snapshotData) {
-
     countOfSnapshotCreated = countOfSnapshotCreated + 1;
     countOfAllSnapshots = countOfAllSnapshots + 1;
-
-    if (waitingMode == 'store-snapshot' && !!snapshotData.name) {
-        // trigger information box
-        Swal.fire({
-            'text': "Perfect, you have created your first snapshot. You can click on it to go that state. Now reset the chart by clicking the reset button. Then click on the snapshot that you created earlier inside the snapshot panel. ",
-            confirmButtonText: 'Next &rarr;',
-            showCancelButton: false,
-            allowOutsideClick: false
-        });
-        waitingMode = 'recall-snapshot';
-
-        $('#study-question').text("Now first reset the chart by clicking the reset button, then click on the snapshot that you created earlier inside the snapshot panel.");
-    }
 }
 
 function recallSnapshotTriggered() {
@@ -235,7 +228,7 @@ function recallSnapshotTriggered() {
                     text: 'You will now begin your practice round. You will be asked 5 questions. You can only proceed to the actual experiment once you answer them all correctly.'
                 },
                 {
-                    text: "Each question will be based around a boy or a girl's name. When you search for a name to answer a question. Create a snapshot of the system."
+                    text: "Each question will be based around a boy or a girl's name. When you search for a name to answer a question a snapshot is automatically created."
                 },
                 {
                     text: 'This snapshot can then be used when a question regarding the same name comes up again.'

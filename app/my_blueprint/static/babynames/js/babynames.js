@@ -21,7 +21,7 @@ var countOfNameSearch = 0;
 
 var gender = "girls";
 
-window.snapshot.initializeSnapshot(false, 1000, {
+window.snapshot.initializeSnapshot(true, 500, {
         'class': '.focus>svg',
         'type': 'svg',
         'size': { 'width': 250, 'height': 100 }

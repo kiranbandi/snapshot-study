@@ -20344,7 +20344,9 @@
 	                        snapshotTimer.stop();
 	                        cash('.snapshot-trigger').text('start');
 	                    }
-	                }
+                    }
+                    // flush buffer
+                    currentData = false;
 	                snapshot.storeSnapshot();
 	            });
 
@@ -20580,10 +20582,13 @@
 	    let isNewSnapshotAvailable = !playModeON && !!currentData && !lodash.isEqual(stackedSnapshot, currentData) && !lodash.isEqual(triggeredData, currentData);
 	    // store current data in snapshot
         let snapshotData = currentData;
-        
-         // trigger study store call
-         storeSnapshotTriggered(snapshotData);
 
+        // custom snippet
+        if(snapshotData.name==''){
+            isNewSnapshotAvailable = false;
+        }
+        
+    
 	    // clear currentData
 	    currentData = false;
 	    // clear trigger 
@@ -20592,6 +20597,9 @@
 	    let thumbnailElements = cash(thumbnailOptions.class);
 	    // check if there is a visual snapshot is available to be stored
 	    if (isNewSnapshotAvailable && thumbnailElements.length > 0) {
+                // trigger study store call
+         storeSnapshotTriggered(snapshotData);
+
 	        if (thumbnailOptions.type == 'canvas') {
 	            createThumbnail(snapshotData, thumbnailElements[0].toDataURL('image/png', 0.75));
 	        } else {

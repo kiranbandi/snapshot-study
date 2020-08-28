@@ -3,14 +3,20 @@ var qOrder = 0;
 var currentQuestions = studyQuestions['snapshot'];
 
 countOfAllSnapshots = 0;
-
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
 
+// hide other unused snapshot toggles
+$("#snapshot-mode-checkbox").hide();
+$("label[for='snapshot-mode-checkbox']").hide();
+// fire of the snapshot study and hide the other controls
+$('.snapshot-trigger').click();
+$('.snapshot-trigger').hide();
+
 // trigger information box
 Swal.fire({
-    title: "The study will now begin. Consider creating a snapshot every time you search a name to answer a question. This will make it easier to answer questions about repeated names.",
+    title: "The study will now begin. Consider using the snapshot panel to answer questions about repeated names.",
     confirmButtonText: 'START',
     showCancelButton: false,
     allowOutsideClick: false,
@@ -52,7 +58,7 @@ var logResponse = function(user_answer) {
         questionNumber: qOrder + 1,
         response: user_answer,
         correct: checkAnswer(user_answer),
-        snapshotMode: 'snap',
+        snapshotMode: 'autosnap',
         nameSearchCount: countOfNameSearch,
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
