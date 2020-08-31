@@ -60,7 +60,67 @@
             "width": 60,
             "min": 0,
             "max": 100,
-            "id": "vis"
+            "id": "visTime"
+        },
+        {
+            "questiontype": "checklist",
+            "instructions": "Are you familiar with any of the following versioning tools?",
+            "id": "version_tools",
+            "questions": [{
+                    "id": "1_git",
+                    "text": "Git"
+                },
+                {
+                    "id": "2_svn",
+                    "text": "SVN"
+                },
+                {
+                    "id": "3_merc",
+                    "text": "Mercurial"
+                },
+                {
+                    "id": "4_none",
+                    "text": "None"
+                }
+            ]
+        },
+        {
+            "questiontype": "checklist",
+            "instructions": "Do you use any of the following backup tools to keep different versions of your work?",
+            "id": "software_versions",
+            "questions": [{
+                    "id": "drop",
+                    "text": "Dropbox"
+                },
+                {
+                    "id": "onedrive",
+                    "text": "Onedrive"
+                },
+                {
+                    "id": "googledrive",
+                    "text": "Google Drive"
+                },
+                {
+                    "id": "none",
+                    "text": "None"
+                }
+            ]
+        },
+        {
+            "questiontype": "multi_field",
+            "id": "version_scenario",
+            "datatype": "text",
+            "placeholder": "",
+            "instructions": "Describe scenarios when you feel the need to create a version of the work you are doing.",
+            "height": "100"
+        },
+        {
+            "questiontype": "multi_field",
+            "id": "version_switch",
+            "datatype": "text",
+            "placeholder": "",
+            "instructions": "if you create different version of your work, what are the main reasons to switch to other versions?",
+            "height": "100"
         }
     ]
 }
