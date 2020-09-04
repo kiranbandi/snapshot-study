@@ -6,6 +6,7 @@ countOfAllSnapshots = 0;
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
+countOfWrongAnswers = 0;
 
 // hide other unused snapshot toggles
 $("#snapshot-mode-checkbox").hide();
@@ -81,6 +82,11 @@ $("#study-trigger").on('click', function() {
             allowOutsideClick: true,
             inputValidator: (value) => {
                 if (!checkAnswer(value)) {
+                    countOfWrongAnswers += 1;
+                    // After 5 attempts let the user through
+                    if (countOfWrongAnswers == 3) {
+                        logResponse(value);
+                    }
                     return 'That is not the correct answer please try again';
                 }
             }
@@ -107,10 +113,10 @@ $("#study-trigger").on('click', function() {
             confirmButtonText: 'Next &rarr;',
             showCancelButton: false,
             allowOutsideClick: false,
-            progressSteps: ['1', '2', '3', '4']
+            progressSteps: ['1', '2', '3', '4', '5', '6']
         }).queue([{
                 title: 'Snapshot Panel',
-                text: 'This is a special panel that can be found in the top left corner of the page. You can move it to wherever you want by clicking on it and dragging it.'
+                text: 'This is a special panel that can be found on the right side of the page.'
             },
             {
                 text: 'When you interact with the visualization by clicking on a line or searching for a name you perform a unique action.'
@@ -123,6 +129,9 @@ $("#study-trigger").on('click', function() {
             },
             {
                 text: "Then in future when you need to search for EMMA again you dont need to type in EMMA in the search bar but can instead simply click on the snapshot EMMA and the system will automatically recreate the snapshot for you."
+            },
+            {
+                text: 'Selecting a year range using the slider below the chart after selecting a name will also create a snapshot for that year and selected name'
             }
         ]).then(() => {
             // fire of the snapshot study
@@ -162,7 +171,8 @@ var logResponse = function(user_answer) {
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
         snapshotRecalledCount: countOfSnapshotClick,
-        snapshotAllCount: countOfAllSnapshots
+        snapshotAllCount: countOfAllSnapshots,
+        wrongAttemptCount: countOfWrongAnswers
     };
 
     console.log("logging response for practice question - ", qOrder);
@@ -234,15 +244,15 @@ function recallSnapshotTriggered() {
                     text: 'This snapshot can then be used when a question regarding the same name comes up again.'
                 },
                 {
-                    text: "Also note that the snapshot panel can be dragged around the screen by clicking on the mouse button anywhere on the panel and then dragging it"
+                    text: "Also note that when there are many snapshots in the snapshot panel you can scroll using the mouse through the list. They are ordered according to time and the latest are at the bottom."
                 }
             ]).then(() => {
                 Swal.fire({
-                    text: 'Before we get started with the practice round. Try dragging the snapshot panel. Place it in a position that you prefer the most. Then click on the start practice button.',
+                    text: 'To get started with the practice round, click on the start practice button.',
                     confirmButtonText: 'OK'
                 });
                 $("#study-trigger").show();
-                $('#study-question').text("Drag the snapshot panel by clicking on it and then dragging your mouse. Move it to a place that you prefer the most.  Then click on the start practice button.");
+                $('#study-question').text('To get started with the practice round, click on the start practice button.');
                 $("#study-trigger").text('START PRACTICE');
             })
         }, 1000);
@@ -255,4 +265,5 @@ function clearCount() {
     countOfSnapshotClick = 0;
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;
+    countOfWrongAnswers = 0;
 }

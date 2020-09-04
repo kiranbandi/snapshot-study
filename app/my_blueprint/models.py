@@ -1,6 +1,6 @@
 def create(db):
     class snapshot(db.Model):
-        __tablename__ = "snapshotV03"
+        __tablename__ = "snapshotV07"
         ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
         participantID = db.Column(db.Integer, db.ForeignKey('participant.participantID'))
         answeredOn = db.Column(db.DateTime, nullable=False, default=db.func.now())
@@ -17,9 +17,8 @@ def create(db):
         snapshotDeletedCount = db.Column(db.String)
         snapshotRecalledCount = db.Column(db.String) 
         snapshotAllCount = db.Column(db.String)
+        wrongAttemptCount = db.Column(db.String)
     return snapshot
-
-
 
 
 

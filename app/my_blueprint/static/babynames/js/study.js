@@ -6,6 +6,7 @@ countOfAllSnapshots = 0;
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
+countOfWrongAnswers = 0;
 
 // hide other unused snapshot toggles
 $("#snapshot-mode-checkbox").hide();
@@ -38,6 +39,17 @@ $("#study-trigger").on('click', function() {
                 if (currentQuestions[qOrder].type == 'boolean' && (value.toLocaleLowerCase() != 'yes' && value.toLocaleLowerCase() != 'no')) {
                     return "You must answer in yes or no"
                 }
+
+                if (!checkAnswer(value)) {
+                    countOfWrongAnswers += 1;
+                    // After 5 attempts let the user through
+                    if (countOfWrongAnswers == 3) {
+                        logResponse(value);
+                    } else {
+                        return 'That is not the correct answer please try again';
+                    }
+
+                }
             }
         }).then((response) => {
             if (response.isConfirmed) { logResponse(response.value) }
@@ -63,7 +75,8 @@ var logResponse = function(user_answer) {
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
         snapshotRecalledCount: countOfSnapshotClick,
-        snapshotAllCount: countOfAllSnapshots
+        snapshotAllCount: countOfAllSnapshots,
+        wrongAttemptCount: countOfWrongAnswers
     };
     console.log("logging response for study question - ", qOrder);
     $.post("#", trialResult).then(function() {
@@ -88,7 +101,7 @@ var showQuestion = function() {
 }
 
 var checkAnswer = function(value) {
-    return value.trim().toLocaleLowerCase() == currentQuestions[qOrder].answer;
+    return value.trim().replace(/\s/g, '').toLocaleLowerCase() == currentQuestions[qOrder].answer;
 }
 
 
@@ -111,4 +124,5 @@ function clearCount() {
     countOfSnapshotClick = 0;
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;
+    countOfWrongAnswers = 0;
 }
