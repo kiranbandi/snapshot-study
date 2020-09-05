@@ -1,6 +1,6 @@
 //Brush is the higher focus chart, All is the smaller context chart	
-var margin = { top: 20, right: 30, bottom: 30, left: 50 },
-    marginAll = { top: 20, right: 30, bottom: 30, left: 50 }
+var margin = { top: 20, right: 345, bottom: 30, left: 50 },
+    marginAll = { top: 20, right: 345, bottom: 30, left: 50 }
 width = ($(".chart.focus").width() - 10) - margin.left - margin.right,
     heightBrush = 500 - margin.top - margin.bottom,
     heightAll = 100 - marginAll.top - marginAll.bottom;
@@ -27,7 +27,7 @@ window.snapshot.initializeSnapshot(false, 1000, {
         'size': { 'width': 250, 'height': 100 }
     },
     (data) => {
-        changeName(data.name, data.sex);
+        changeName(data.name, data.sex, data.years);
     }, false);
 
 var color = (gender === "boys" ? colorBoys : colorGirls);
@@ -461,6 +461,11 @@ function brushend() {
     d3.select(this).transition()
         .call(brush.extent(brush.extent().map(function(d) { return d3.round(d, 0); })))
         .call(brush.event);
+
+    if (selectedName) {
+        window.snapshot.updateSnapshot({ 'name': d3.select(".genderTitle").text(), 'years': brush.extent(), 'sex': gender })
+    }
+
 } //brushend
 
 function brushcenter() {
@@ -527,6 +532,7 @@ d3.select("#girlButton").on("click", function(e) {
 d3.select("#resetname").on("click", function(e) {
     selectedName = false;
     searchEvent('');
+    gBrush.call(brush.extent([startYear, endYear])).call(brush.event);
 });
 
 ////////////////////////////////////////////////////////////// 
@@ -554,7 +560,10 @@ function searchEvent(name) {
         var maxYear = Math.min(endYear, d3.max(subset, function(d) { return d.year; }) + 1);
         //Call the resetting of the brush
         moveType = "still"
-        gBrush.call(brush.extent([minYear, maxYear])).call(brush.event);
+            // set year only if it comes from the snapshot
+        if (setYear) {
+            gBrush.call(brush.extent([snapshotYear[0], snapshotYear[1]])).call(brush.event);
+        }
 
         //Wait a bit with making the lines transparent, otherwise the brush functions
         //will reset it again
@@ -599,11 +608,11 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 //Focus the chart on a name
-function changeName(name, sex) {
-    if (gender === sex) searchEvent(name);
+function changeName(name, sex, snapshotYearRange) {
+    if (gender === sex) searchEvent(name, true, snapshotYearRange);
     else {
         redraw(sex);
-        searchEvent(name);
+        searchEvent(name, true, snapshotYearRange);
         if (gender === "boys") {
             d3.select("#boyButton").classed("active", true);
             d3.select("#girlButton").classed("active", false);

@@ -7,6 +7,7 @@ countOfAllSnapshots = 0;
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
+countOfWrongAnswers = 0;
 
 var waitingMode = 'store-snapshot';
 
@@ -77,6 +78,12 @@ $("#study-trigger").on('click', function() {
             allowOutsideClick: true,
             inputValidator: (value) => {
                 if (!checkAnswer(value)) {
+
+                    countOfWrongAnswers += 1;
+                    // After 3 attempts let the user through
+                    if (countOfWrongAnswers == 3) {
+                        return '';
+                    }
                     return 'That is not the correct answer please try again';
                 }
             }
@@ -106,10 +113,10 @@ $("#study-trigger").on('click', function() {
             progressSteps: ['1', '2', '3', '4']
         }).queue([{
                 title: 'Snapshot Panel',
-                text: 'This is a special panel that can be found in the top left corner of the page. You can move it to wherever you want by clicking on it and dragging it.'
+                text: 'This is a special panel that can be found on the right side of the page.'
             },
             {
-                text: 'When you interact with the visualization by clicking on a line or searching for a name you have performed a unique action'
+                text: 'When you interact with the visualization by clicking on a line or searching for a name or selecting a year range, you have performed a unique action.'
             },
             {
                 text: 'The snapshot panel tracks these actions and can be used to create snapshots of the visualization at that point in time. You can then click on these snapshots to recreate your action.'
@@ -155,7 +162,8 @@ var logResponse = function(user_answer) {
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
         snapshotRecalledCount: countOfSnapshotClick,
-        snapshotAllCount: countOfAllSnapshots
+        snapshotAllCount: countOfAllSnapshots,
+        wrongAttemptCount: countOfWrongAnswers
     };
 
     console.log("logging response for practice question - ", qOrder);
@@ -235,21 +243,18 @@ function recallSnapshotTriggered() {
                     text: 'You will now begin your practice round. You will be asked 5 questions. You can only proceed to the actual experiment once you answer them all correctly.'
                 },
                 {
-                    text: "Each question will be based around a boy or a girl's name. When you search for a name to answer a question. Create a snapshot of the system."
+                    text: "Each question will be based around a boy or a girl's name. When you search for a name or select a year range to answer a question. Create a snapshot of the system."
                 },
                 {
-                    text: 'This snapshot can then be used when a question regarding the same name comes up again.'
-                },
-                {
-                    text: "Also note that the snapshot panel can be dragged around the screen by clicking on the mouse button anywhere on the panel and then dragging it"
+                    text: 'This snapshot can then be used when a question regarding the same name or year range comes up again.'
                 }
             ]).then(() => {
                 Swal.fire({
-                    text: 'Before we get started with the practice round. Try dragging the snapshot panel. Place it in a position that you prefer the most. Then click on the start practice button.',
+                    text: 'To get started with the practice round, click on the start practice button.',
                     confirmButtonText: 'OK'
                 });
                 $("#study-trigger").show();
-                $('#study-question').text("Drag the snapshot panel by clicking on it and then dragging your mouse. Move it to a place that you prefer the most.  Then click on the start practice button.");
+                $('#study-question').text('To get started with the practice round, click on the start practice button.');
                 $("#study-trigger").text('START PRACTICE');
             })
         }, 1000);
@@ -262,4 +267,5 @@ function clearCount() {
     countOfSnapshotClick = 0;
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;
+    countOfWrongAnswers = 0;
 }

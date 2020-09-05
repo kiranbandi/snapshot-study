@@ -31,6 +31,7 @@ def practice_results():
         log.snapshotDeletedCount = request.form['snapshotDeletedCount']
         log.snapshotRecalledCount = request.form['snapshotRecalledCount']
         log.snapshotAllCount = request.form['snapshotAllCount']
+        log.wrongAttemptCount = request.form['wrongAttemptCount']
         db.session.add(log)
         db.session.commit()
     return render_template("practice.html", example="This is example text.")
@@ -56,6 +57,7 @@ def study_results():
         log.snapshotDeletedCount = request.form['snapshotDeletedCount']
         log.snapshotRecalledCount = request.form['snapshotRecalledCount']
         log.snapshotAllCount = request.form['snapshotAllCount']
+        log.wrongAttemptCount = request.form['wrongAttemptCount']
         db.session.add(log)
         db.session.commit()
     return render_template("study.html", example="This is example text.")

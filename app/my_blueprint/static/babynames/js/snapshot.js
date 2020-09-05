@@ -20209,47 +20209,46 @@
 	                'background': 'rgba(255, 255, 255, 0.90)',
 	                'width': containerWidth < 300 ? 300 : containerWidth + 'px',
 	                'position': 'fixed',
-	                'top': '100px',
-	                'left': '15px',
+	                'top': '75px',
+	                'left': $('.chart.focus').width()-305 + 'px',
 	                'border': '2px solid #2f2f2f',
 	                'border-radius': '5px',
 	                'z-index': '5000',
 	                'padding': '5px',
-	                'cursor': 'move',
-	                'max-height': '395px',
+                    'height': window.innerHeight*0.80 + 'px',
 	                'text-align': 'center'
 	            })
 	            .appendTo('body');
 
-	        cash('<span>&#x26F6;</span>')
-	            .css({
-	                'position': 'absolute',
-	                'top': '0px',
-	                'right': '5px',
-	                'color': 'black',
-	                'font-weight': 'bold',
-	                'font-size': '20px',
-	                'cursor': 'pointer',
-	            })
-	            .appendTo(snapshotContainer)
-	            .on('click', function(event) {
-	                if (isMinimized) {
-	                    cash('.snapshot-custom-wrapper')
-	                        .css({
-	                            'width': '95%',
-	                            'top': '10px',
-	                            'left': '10px'
-	                        });
-	                    isMinimized = false;
-	                } else {
-	                    let containerWidth = (+thumbnailOptions.size.width + 65);
-	                    cash('.snapshot-custom-wrapper')
-	                        .css({
-	                            'width': containerWidth < 300 ? 300 : containerWidth + 'px',
-	                        });
-	                    isMinimized = true;
-	                }
-	            });
+	        // cash('<span>&#x26F6;</span>')
+	        //     .css({
+	        //         'position': 'absolute',
+	        //         'top': '0px',
+	        //         'right': '5px',
+	        //         'color': 'black',
+	        //         'font-weight': 'bold',
+	        //         'font-size': '20px',
+	        //         'cursor': 'pointer',
+	        //     })
+	        //     .appendTo(snapshotContainer)
+	        //     .on('click', function(event) {
+	        //         if (isMinimized) {
+	        //             cash('.snapshot-custom-wrapper')
+	        //                 .css({
+	        //                     'width': '95%',
+	        //                     'top': '10px',
+	        //                     'left': '10px'
+	        //                 });
+	        //             isMinimized = false;
+	        //         } else {
+	        //             let containerWidth = (+thumbnailOptions.size.width + 65);
+	        //             cash('.snapshot-custom-wrapper')
+	        //                 .css({
+	        //                     'width': containerWidth < 300 ? 300 : containerWidth + 'px',
+	        //                 });
+	        //             isMinimized = true;
+	        //         }
+	        //     });
 
 	        if (isAuto) {
 	            cash('<input type="checkbox" id="snapshot-mode-checkbox" ' + (isAuto ? 'checked' : '') + ' ></input>')
@@ -20445,12 +20444,12 @@
 
 	        cash("<div class='snapshot-image-wrapper'></div>")
 	            .css({
-	                'max-height': '300px',
+                    'height':  (window.innerHeight*0.80 - 50) + 'px',
 	                'overflow-y': 'scroll',
 	                'text-align': 'center'
 	            })
 	            .appendTo('.snapshot-custom-wrapper');
-	        new draggabilly('.snapshot-custom-wrapper', {});
+	        // new draggabilly('.snapshot-custom-wrapper', {});
 	    }
 	    onRecall = onRecallCallback;
 	    isIntialized = true;
@@ -20463,7 +20462,7 @@
         
 	    // store snapshotData
 	    datastore[snapshotID] = thumbnailData;
-	    labelstore[snapshotID] = thumbnailData.name || Object.keys(datastore).length;
+	    labelstore[snapshotID] = (thumbnailData.name + " " + thumbnailData.years.join('-')) || Object.keys(datastore).length;
 	    let imageButton = cash('<div class="snapshot-entry" id=' + snapshotID + '></div>')
 	        .css({
 	            'border': ' 1px solid transparent',
@@ -20482,7 +20481,7 @@
 	            const targetName = event.target.className,
 	                uniqueCode = event.currentTarget.id;
 
-	            if (targetName.indexOf('snapshot-recall') > -1) {
+	            if (targetName.indexOf('snapshot-recall') > -1 || targetName.indexOf('snapshot-label') > -1)  {
 	                const data = datastore[uniqueCode];
 	                // store seperately so self triggerring doesnt occur
 	                triggeredData = lodash.cloneDeep(data);
@@ -20500,7 +20499,7 @@
 	                labelstore[uniqueCode] = newLabel;
 	                cash('#' + uniqueCode + ' > .snapshot-label').text(newLabel);
 
-	            } else {
+	            } else if (targetName.indexOf('snapshot-delete') > -1)  {
 
                       // trigger study delete call
                       deleteSnapshotTriggered();
@@ -20513,7 +20512,7 @@
 
 	        });
 
-	    cash('<div class="snapshot-delete"><span>×</span></div>')
+	    cash('<div class="snapshot-delete"><span class="snapshot-delete">×</span></div>')
 	        .css({
 	            'background': ' white',
 	            'border-radius': ' 10px',

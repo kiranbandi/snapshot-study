@@ -3,7 +3,7 @@ var qOrder = 0;
 var currentQuestions = studyQuestions['snapshot'];
 
 countOfAllSnapshots = 0;
-
+countOfWrongAnswers = 0;
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
@@ -32,6 +32,16 @@ $("#study-trigger").on('click', function() {
                 if (currentQuestions[qOrder].type == 'boolean' && (value.toLocaleLowerCase() != 'yes' && value.toLocaleLowerCase() != 'no')) {
                     return "You must answer in yes or no"
                 }
+
+                if (!checkAnswer(value)) {
+                    countOfWrongAnswers += 1;
+                    // After 3 attempts let the user through
+                    if (countOfWrongAnswers == 3) {
+                        return '';
+                    } else {
+                        return 'That is not the correct answer please try again';
+                    }
+                }
             }
         }).then((response) => {
             if (response.isConfirmed) { logResponse(response.value) }
@@ -57,14 +67,15 @@ var logResponse = function(user_answer) {
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
         snapshotRecalledCount: countOfSnapshotClick,
-        snapshotAllCount: countOfAllSnapshots
+        snapshotAllCount: countOfAllSnapshots,
+        wrongAttemptCount: countOfWrongAnswers
     };
     console.log("logging response for study question - ", qOrder);
     $.post("#", trialResult).then(function() {
         // after results are posted 
         $("#study-trigger").text('ANSWER');
         qOrder += 1;
-        if (qOrder == 15) {
+        if (qOrder == 23) {
             alert('Your study round is complete. This page will now automatically close and you will be redirected to the next page to answer some questions.');
             window.location.href = "/redirect_next_page";
         } else {
@@ -82,7 +93,7 @@ var showQuestion = function() {
 }
 
 var checkAnswer = function(value) {
-    return value.trim().toLocaleLowerCase() == currentQuestions[qOrder].answer;
+    return value.trim().replace(/\s/g, '').toLocaleLowerCase() == currentQuestions[qOrder].answer;
 }
 
 
@@ -105,4 +116,5 @@ function clearCount() {
     countOfSnapshotClick = 0;
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;
+    countOfWrongAnswers = 0;
 }
