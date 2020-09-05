@@ -10,7 +10,7 @@ countOfSnapshotDeleted = 0;
 
 // trigger information box
 Swal.fire({
-    title: "The study will now begin. Consider creating a snapshot every time you search a name to answer a question. This will make it easier to answer questions about repeated names.",
+    title: "The study will now begin. Consider creating a snapshot every time you search a name or set a year range, to answer a question. This will make it easier to answer questions if the same name or year range comes up again.",
     confirmButtonText: 'START',
     showCancelButton: false,
     allowOutsideClick: false,

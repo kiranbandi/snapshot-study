@@ -235,7 +235,7 @@ function recallSnapshotTriggered() {
                 confirmButtonText: 'Next &rarr;',
                 showCancelButton: false,
                 allowOutsideClick: false,
-                progressSteps: ['1', '2', '3', '4', '5']
+                progressSteps: ['1', '2', '3', '4']
             }).queue([{
                     text: 'Perfect, you have now switched back to the state of the visualization stored in the snapshot you just clicked.'
                 },

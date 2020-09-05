@@ -541,7 +541,7 @@ d3.select("#resetname").on("click", function(e) {
 //Function to fire when somebody searches for a name
 var nameTimer;
 
-function searchEvent(name) {
+function searchEvent(name, setYear, snapshotYear) {
 
     countOfNameSearch = countOfNameSearch + 1;
 
