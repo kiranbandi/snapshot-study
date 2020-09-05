@@ -83,7 +83,7 @@ var logResponse = function(user_answer) {
         // after results are posted 
         $("#study-trigger").text('ANSWER');
         qOrder += 1;
-        if (qOrder == 15) {
+        if (qOrder == 23) {
             alert('Your study round is complete. This page will now automatically close and you will be redirected to the next page to answer some questions.');
             window.location.href = "/redirect_next_page";
         } else {
