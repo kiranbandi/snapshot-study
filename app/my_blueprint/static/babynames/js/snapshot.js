@@ -20483,16 +20483,14 @@
 	            const targetName = event.target.className,
 	                uniqueCode = event.currentTarget.id;
 
-	            if (targetName.indexOf('snapshot-recall') > -1) {
+	            if (targetName.indexOf('snapshot-recall') > -1 || targetName.indexOf('snapshot-label') > -1) {
 	                const data = datastore[uniqueCode];
 	                // store seperately so self triggerring doesnt occur
 	                triggeredData = lodash.cloneDeep(data);
 	                if (data) { 
                       // trigger study recall call
                       recallSnapshotTriggered(data);
-                    
                         onRecall(data);
-                    
                     }
 	            } else if (targetName.indexOf('snapshot-edit') > -1) {
 
@@ -20501,12 +20499,11 @@
 	                labelstore[uniqueCode] = newLabel;
 	                cash('#' + uniqueCode + ' > .snapshot-label').text(newLabel);
 
-	            } else {
+	            } else if (targetName.indexOf('snapshot-delete') > -1) {
 
                       // trigger study delete call
-                      deleteSnapshotTriggered();
-                    
-
+                    deleteSnapshotTriggered();
+            
 	                delete datastore[uniqueCode];
 	                delete labelstore[uniqueCode];
 	                cash('#' + uniqueCode).remove();
@@ -20514,7 +20511,7 @@
 
 	        });
 
-	    cash('<div class="snapshot-delete"><span>×</span></div>')
+	    cash('<div class="snapshot-delete"><span class="snapshot-delete">×</span></div>')
 	        .css({
 	            'background': ' white',
 	            'border-radius': ' 10px',

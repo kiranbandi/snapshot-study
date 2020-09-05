@@ -44,7 +44,7 @@ $("#study-trigger").on('click', function() {
                     countOfWrongAnswers += 1;
                     // After 5 attempts let the user through
                     if (countOfWrongAnswers == 3) {
-                        logResponse(value);
+                        return '';
                     } else {
                         return 'That is not the correct answer please try again';
                     }

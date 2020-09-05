@@ -83,16 +83,16 @@ $("#study-trigger").on('click', function() {
             inputValidator: (value) => {
                 if (!checkAnswer(value)) {
                     countOfWrongAnswers += 1;
-                    // After 5 attempts let the user through
+                    // After 3 attempts let the user through
                     if (countOfWrongAnswers == 3) {
-                        logResponse(value);
+                        return '';
+                    } else {
+                        return 'That is not the correct answer please try again';
                     }
-                    return 'That is not the correct answer please try again';
                 }
             }
         }).then((response) => {
             if (response.isConfirmed) {
-
                 if (qOrder == 0) {
                     Swal.fire({
                         text: 'Notice the snapshot that was created in the snapshot panel when you searched for AMANDA. Click on it to quickly switch when a question regarding AMANDA comes up again.',
