@@ -1,6 +1,7 @@
 var trialStartTime;
 var qOrder = 0;
 countOfNameSearch = 0;
+countOfWrongAnswers = 0;
 
 var currentQuestions = [{
         "label": "Was the girl's name AMANDA popular(ranked in top 10) in the year 2005? (answer with yes or no)",
@@ -68,6 +69,12 @@ $("#study-trigger").on('click', function() {
             allowOutsideClick: true,
             inputValidator: (value) => {
                 if (!checkAnswer(value)) {
+
+                    countOfWrongAnswers += 1;
+                    // After 3 attempts let the user through
+                    if (countOfWrongAnswers == 3) {
+                        return '';
+                    }
                     return 'That is not the correct answer please try again';
                 }
             }
@@ -98,7 +105,8 @@ var logResponse = function(user_answer) {
         response: user_answer,
         correct: checkAnswer(user_answer),
         snapshotMode: 'nosnap',
-        nameSearchCount: countOfNameSearch
+        nameSearchCount: countOfNameSearch,
+        wrongAttemptCount: countOfWrongAnswers
     };
     console.log("logging response for practice question - ", qOrder);
     $.post("#", trialResult).then(function() {
@@ -119,6 +127,7 @@ var logResponse = function(user_answer) {
 var showQuestion = function() {
     trialStartTime = new Date();
     countOfNameSearch = 0;
+    countOfWrongAnswers = 0;
     $('#study-question').text(currentQuestions[qOrder].label);
     $("#study-trigger").text('ANSWER');
 }

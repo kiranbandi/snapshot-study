@@ -27,6 +27,7 @@ def practice_results():
         log.correct=request.form['correct']
         log.snapshotMode=request.form['snapshotMode']
         log.nameSearchCount=request.form['nameSearchCount']
+        log.wrongAttemptCount = request.form['wrongAttemptCount']
         db.session.add(log)
         db.session.commit()
     return render_template("practice.html", example="This is example text.")
@@ -48,6 +49,7 @@ def study_results():
         log.correct=request.form['correct']
         log.snapshotMode=request.form['snapshotMode']
         log.nameSearchCount=request.form['nameSearchCount']
+        log.wrongAttemptCount = request.form['wrongAttemptCount']
         db.session.add(log)
         db.session.commit()
     return render_template("study.html", example="This is example text.")

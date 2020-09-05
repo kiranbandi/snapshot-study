@@ -554,7 +554,7 @@ function searchEvent(name) {
         var maxYear = Math.min(endYear, d3.max(subset, function(d) { return d.year; }) + 1);
         //Call the resetting of the brush
         moveType = "still"
-        gBrush.call(brush.extent([minYear, maxYear])).call(brush.event);
+            // gBrush.call(brush.extent([minYear, maxYear])).call(brush.event);
 
         //Wait a bit with making the lines transparent, otherwise the brush functions
         //will reset it again
