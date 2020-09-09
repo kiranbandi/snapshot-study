@@ -1,7 +1,7 @@
 var trialStartTime;
 var qOrder = 0;
 countOfNameSearch = 0;
-
+customSnapshotCount = 0;
 countOfAllSnapshots = 0;
 countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
@@ -11,7 +11,6 @@ countOfWrongAnswers = 0;
 // hide other unused snapshot toggles
 $("#snapshot-mode-checkbox").hide();
 $("label[for='snapshot-mode-checkbox']").hide();
-$('.snapshot-trigger').hide();
 
 var waitingMode = 'recall-snapshot';
 
@@ -131,18 +130,18 @@ $("#study-trigger").on('click', function() {
                 text: "Then in future when you need to search for EMMA again you dont need to type in EMMA in the search bar but can instead simply click on the snapshot EMMA and the system will automatically recreate the snapshot for you."
             },
             {
-                text: 'Selecting a year range using the slider below the chart after selecting a name will also create a snapshot for that year and selected name'
+                text: 'Selecting a year range using the slider below the chart after selecting a name will also create a snapshot for that year and selected name.'
             }
         ]).then(() => {
             // fire of the snapshot study
             $('.snapshot-trigger').click();
 
             Swal.fire({
-                text: 'Lets try this out. First click on any line in the chart. Then after you are done you will notice that a snapshot has been automatically created for the name you searched. Now reset the chart and then click on the snapshot.',
+                text: 'Lets try this out. First click on any line in the chart. Then after you are done you will notice that a snapshot has been automatically created for the name you searched. Now reset the chart and then click on the new image that was created in the snapshot panel.',
                 confirmButtonText: 'Go'
             });
             // hide question box
-            $('#study-question').text("First click on any line in the chart. Then after you are done you will notice that a snapshot has been automatically created for the name you searched. Now reset the chart and then click on the snapshot.");
+            $('#study-question').text("First click on any line in the chart. Then after you are done you will notice that a snapshot image has been automatically created for the name you searched. Now reset the chart and then click on the snapshot image that was created.");
             $("#study-trigger").hide();
 
         })
@@ -189,8 +188,6 @@ var logResponse = function(user_answer) {
     })
 };
 
-
-
 var showQuestion = function() {
     // show question box if it is hidden
     $(".study-trigger").show();
@@ -216,9 +213,13 @@ function storeSnapshotTriggered(snapshotData) {
     countOfAllSnapshots = countOfAllSnapshots + 1;
 }
 
-function recallSnapshotTriggered() {
+function recallSnapshotTriggered(customCalled = false) {
 
     countOfSnapshotClick = countOfSnapshotClick + 1;
+
+    if (customCalled) {
+        countOfCustomSnapshotClick = countOfCustomSnapshotClick + 1;
+    }
 
     if (waitingMode == 'recall-snapshot') {
 
@@ -232,6 +233,9 @@ function recallSnapshotTriggered() {
                 allowOutsideClick: false,
                 progressSteps: ['1', '2', '3', '4', '5']
             }).queue([{
+                    text: 'Perfect, you have now switched back to the state of the visualization stored in the snapshot you just clicked.'
+                },
+                {
                     text: 'Perfect, you have now switched back to the state of the visualization stored in the snapshot you just clicked.'
                 },
                 {
@@ -262,6 +266,8 @@ function recallSnapshotTriggered() {
 
 function clearCount() {
     countOfNameSearch = 0;
+    customSnapshotCount = 0;
+    countOfCustomSnapshotClick = 0;
     countOfSnapshotClick = 0;
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;

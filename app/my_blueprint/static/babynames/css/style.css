@@ -118,3 +118,7 @@ h3 {
 .snapshot-entry:hover {
     border: 2px solid rgb(25, 151, 198) !important;
 }
+
+.snapshot-entry.custom-made-snapshot:hover {
+    border: 5px solid red !important;
+}

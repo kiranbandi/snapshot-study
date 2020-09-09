@@ -13,7 +13,6 @@ $("#snapshot-mode-checkbox").hide();
 $("label[for='snapshot-mode-checkbox']").hide();
 // fire of the snapshot study and hide the other controls
 $('.snapshot-trigger').click();
-$('.snapshot-trigger').hide();
 
 // trigger information box
 Swal.fire({

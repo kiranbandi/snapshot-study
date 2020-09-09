@@ -1,3 +1,8 @@
+var firstTime = true;
+var lastsnapshotID = '';
+
+var customSnapshotCount = 0;
+
 (function() {
         'use strict';
 
@@ -20220,35 +20225,6 @@
 	            })
 	            .appendTo('body');
 
-	        // cash('<span>&#x26F6;</span>')
-	        //     .css({
-	        //         'position': 'absolute',
-	        //         'top': '0px',
-	        //         'right': '5px',
-	        //         'color': 'black',
-	        //         'font-weight': 'bold',
-	        //         'font-size': '20px',
-	        //         'cursor': 'pointer',
-	        //     })
-	        //     .appendTo(snapshotContainer)
-	        //     .on('click', function(event) {
-	        //         if (isMinimized) {
-	        //             cash('.snapshot-custom-wrapper')
-	        //                 .css({
-	        //                     'width': '95%',
-	        //                     'top': '10px',
-	        //                     'left': '10px'
-	        //                 });
-	        //             isMinimized = false;
-	        //         } else {
-	        //             let containerWidth = (+thumbnailOptions.size.width + 65);
-	        //             cash('.snapshot-custom-wrapper')
-	        //                 .css({
-	        //                     'width': containerWidth < 300 ? 300 : containerWidth + 'px',
-	        //                 });
-	        //             isMinimized = true;
-	        //         }
-	        //     });
 
 	        if (isAuto) {
 	            cash('<input type="checkbox" id="snapshot-mode-checkbox" ' + (isAuto ? 'checked' : '') + ' ></input>')
@@ -20293,8 +20269,6 @@
 	                .appendTo(snapshotContainer);
 	        }
 
-
-
 	        snapshotTimer = isAuto ? new Timer(() => {
 	            snapshot.storeSnapshot();
 	            // stop the timer after its complete
@@ -20302,7 +20276,7 @@
 	                snapshotTimer.stop();
 	        }, timerDur) : false;
 
-	        let snapshotButton = cash('<button class="snapshot-trigger">' + (isAuto ? 'start' : 'snapshot') + '</button>')
+	        let snapshotButton = cash('<button class="snapshot-trigger">' +'snapshot' + '</button>')
 	            .css({
 	                'text-align': ' center',
 	                'vertical-align': ' middle',
@@ -20328,139 +20302,41 @@
 	            .on('click', function(event) {
 	                event.preventDefault();
                     event.stopPropagation();
-                    
-                   
 
-
-	                if (isAutoModeON) {
-	                    // timer is off at the moment so trigger it ON
-	                    if (!isTimerON) {
-	                        isTimerON = true;
-	                        snapshotTimer.reset();
-	                        cash('.snapshot-trigger').text('stop');
-	                    } else {
-	                        isTimerON = false;
-	                        snapshotTimer.stop();
-	                        cash('.snapshot-trigger').text('start');
-	                    }
+                    if (isAutoModeON && firstTime) {
+                            // timer is off at the moment so trigger it ON
+                            if (!isTimerON) {
+                                isTimerON = true;
+                                snapshotTimer.reset();
+                            } else {
+                                isTimerON = false;
+                                snapshotTimer.stop();
+                            }
+                            firstTime = false;
                     }
-                    // flush buffer
-                    currentData = false;
-	                snapshot.storeSnapshot();
+                    cash('#'+lastsnapshotID).css({'border':'4px solid red'});
+                    cash('#'+lastsnapshotID).addClass('custom-made-snapshot');
+                    customSnapshotCount = customSnapshotCount+1;
 	            });
-
-	        // let clearSnapshotButton = cash('<button class="snapshot-clear">clear</button>')
-	        //     .css({
-	        //         'text-align': ' center',
-	        //         'vertical-align': ' middle',
-	        //         'cursor': ' pointer',
-	        //         'background-image': ' none',
-	        //         'border': ' 1px solid transparent',
-	        //         'padding': ' 6px 12px',
-	        //         'font-size': ' 14px',
-	        //         'line-height': ' 1.5',
-	        //         'border-radius': ' 4px',
-	        //         '-webkit-user-select': ' none',
-	        //         '-moz-user-select': ' none',
-	        //         '-ms-user-select': ' none',
-	        //         'user-select': ' none',
-	        //         'color': ' #1997c6',
-	        //         'background-color': ' transparent',
-	        //         'border-color': ' #1997c6',
-	        //         'margin': ' 10px auto',
-	        //         'display': 'inline-block',
-	        //         'text-transform': ' uppercase',
-	        //         'margin-left': '5px'
-	        //     })
-	        //     .appendTo('.snapshot-custom-wrapper')
-	        //     .on('click', function(event) {
-	        //         event.preventDefault();
-            //         event.stopPropagation();
-                    
-            //            // trigger study clear call
-            //            clearSnapshotTriggered();
-
-
-	        //         Object.keys(datastore)
-	        //             .map(function(d) {
-	        //                 delete datastore[d];
-	        //                 cash('#' + d).remove();
-	        //             });
-	        //         currentData = {};
-	        //         triggeredData = {};
-	        //     });
-
-	        if (replayAvailable) {
-	            let playPlauseButton = cash('<button class="story-mode">&#x25B6;</button>')
-	                .css({
-	                    'text-align': ' center',
-	                    'vertical-align': ' middle',
-	                    'cursor': ' pointer',
-	                    'background-image': ' none',
-	                    'border': ' 1px solid transparent',
-	                    'padding': ' 6px 12px',
-	                    'font-size': ' 14px',
-	                    'line-height': ' 1.5',
-	                    'border-radius': ' 4px',
-	                    '-webkit-user-select': ' none',
-	                    '-moz-user-select': ' none',
-	                    '-ms-user-select': ' none',
-	                    'user-select': ' none',
-	                    'color': ' #1997c6',
-	                    'background-color': ' transparent',
-	                    'border-color': ' #1997c6',
-	                    'margin': ' 10px auto',
-	                    'display': 'inline-block',
-	                    'text-transform': ' uppercase',
-	                    'margin-left': '5px'
-	                })
-	                .appendTo('.snapshot-custom-wrapper')
-	                .on('click', function(event) {
-
-	                    if (playModeON) {
-	                        playModeON = false;
-	                        cash('.story-mode').html('&#x25B6;');
-	                        storyTimer.stop();
-	                        storyTimer = null;
-	                    } else {
-	                        playModeON = true;
-	                        cash('.story-mode').html('&#x23F8;');
-	                        let storyPoints = Object.keys(datastore);
-	                        storyTimer = new Timer(() => {
-	                            let storyPoint = storyPoints.shift();
-	                            if (storyPoint) {
-	                                const data = datastore[storyPoint];
-	                                // store seperately so self triggerring doesnt occur
-	                                triggeredData = lodash.cloneDeep(data);
-	                                if (data) { onRecall(data); }
-	                            } else {
-	                                playModeON = false;
-	                                cash('.story-mode').html('&#x25B6;');
-	                                storyTimer.stop();
-	                                storyTimer = null;
-	                            }
-	                        }, 1000);
-	                    }
-	                });
-	        }
 
 	        cash("<div class='snapshot-image-wrapper'></div>")
 	            .css({
-	                'height':  (window.innerHeight*0.80 - 50) + 'px',
+	                'height':  (window.innerHeight*0.80 - 100) + 'px',
 	                'overflow-y': 'scroll',
 	                'text-align': 'center'
 	            })
 	            .appendTo('.snapshot-custom-wrapper');
-	        // new draggabilly('.snapshot-custom-wrapper', {});
 	    }
 	    onRecall = onRecallCallback;
 	    isIntialized = true;
 	};
 
 
-	function createThumbnail(thumbnailData, uri) {
+	function createThumbnail(thumbnailData, uri,isCustomMade=false) {
 
-	    const snapshotID = 'snapshot-code-' + lodash.uniqueId();
+        const snapshotID = 'snapshot-code-' + lodash.uniqueId();
+        
+        lastsnapshotID = snapshotID;
         
 	    // store snapshotData
 	    datastore[snapshotID] = thumbnailData;
@@ -20474,7 +20350,7 @@
 	            'position': 'relative',
 	            'overflow': 'hidden',
 	            'margin': '5px 5px 5px 0px',
-	            'cursor': 'pointer'
+                'cursor': 'pointer'
 	        })
 	        .appendTo('.snapshot-image-wrapper')
 	        .on('click', function(event) {
@@ -20489,8 +20365,8 @@
 	                triggeredData = lodash.cloneDeep(data);
 	                if (data) { 
                       // trigger study recall call
-                      recallSnapshotTriggered(data);
-                        onRecall(data);
+                      recallSnapshotTriggered(cash('#'+uniqueCode).hasClass('custom-made-snapshot'));
+                      onRecall(data);
                     }
 	            } else if (targetName.indexOf('snapshot-edit') > -1) {
 
@@ -20503,12 +20379,10 @@
 
                       // trigger study delete call
                     deleteSnapshotTriggered();
-            
 	                delete datastore[uniqueCode];
 	                delete labelstore[uniqueCode];
 	                cash('#' + uniqueCode).remove();
 	            }
-
 	        });
 
 	    cash('<div class="snapshot-delete"><span class="snapshot-delete">×</span></div>')
@@ -20527,23 +20401,6 @@
 	            'line-height': ' 1'
 	        })
 	        .appendTo(imageButton);
-
-	    // cash('<div class="snapshot-edit">&#128393;</div>')
-	    //     .css({
-	    //         'background': ' white',
-	    //         'border-radius': ' 10px',
-	    //         'width': ' 20px',
-	    //         'position': ' absolute',
-	    //         'right': ' 2px',
-	    //         'top': ' 27.5px',
-	    //         'color': ' black',
-	    //         'opacity': ' 1',
-	    //         'float': ' right',
-	    //         'font-size': ' 21px',
-	    //         'font-weight': ' bold',
-	    //         'line-height': ' 1'
-	    //     })
-	    //     .appendTo(imageButton);
 
 	    cash('<div class="snapshot-label">' + labelstore[snapshotID] + '</div>')
 	        .css({
@@ -20575,6 +20432,7 @@
 	};
 
 	snapshot.storeSnapshot = function() {
+
 	    let isNewSnapshotAvailable = !playModeON && !!currentData && !lodash.isEqual(stackedSnapshot, currentData) && !lodash.isEqual(triggeredData, currentData);
 	    // store current data in snapshot
         let snapshotData = currentData;
@@ -20583,8 +20441,6 @@
         if(snapshotData.name==''){
             isNewSnapshotAvailable = false;
         }
-        
-    
 	    // clear currentData
 	    currentData = false;
 	    // clear trigger 
@@ -20597,7 +20453,7 @@
          storeSnapshotTriggered(snapshotData);
 
 	        if (thumbnailOptions.type == 'canvas') {
-	            createThumbnail(snapshotData, thumbnailElements[0].toDataURL('image/png', 0.75));
+	            createThumbnail(snapshotData, thumbnailElements[0].toDataURL('image/png', 0.75),customMade);
 	        } else {
 	            ParseSVG(thumbnailElements[0])
 	                .then((svgEl) => {
