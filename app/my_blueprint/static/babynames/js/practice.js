@@ -7,6 +7,7 @@ countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
 countOfWrongAnswers = 0;
+countOfCustomSnapshotClick = 0;
 
 // hide other unused snapshot toggles
 $("#snapshot-mode-checkbox").hide();
@@ -141,7 +142,7 @@ $("#study-trigger").on('click', function() {
                 confirmButtonText: 'Go'
             });
             // hide question box
-            $('#study-question').text("First click on any line in the chart. Then after you are done you will notice that a snapshot image has been automatically created for the name you searched. Now reset the chart and then click on the snapshot image that was created.");
+            $('#study-question').text("First click on any line in the chart. Then after you are done you will notice that a snapshot image has been automatically created for the name you searched. Now reset the chart and then click on the snapshot image that was created in the snapshot panel.");
             $("#study-trigger").hide();
 
         })
@@ -165,13 +166,15 @@ var logResponse = function(user_answer) {
         questionNumber: qOrder + 1,
         response: user_answer,
         correct: checkAnswer(user_answer),
-        snapshotMode: 'autosnap',
+        snapshotMode: 'hybrid',
         nameSearchCount: countOfNameSearch,
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
         snapshotRecalledCount: countOfSnapshotClick,
         snapshotAllCount: countOfAllSnapshots,
-        wrongAttemptCount: countOfWrongAnswers
+        wrongAttemptCount: countOfWrongAnswers,
+        customSnapshotCount: customSnapshotCount,
+        countOfCustomSnapshotClick: countOfCustomSnapshotClick
     };
 
     console.log("logging response for practice question - ", qOrder);
@@ -231,14 +234,12 @@ function recallSnapshotTriggered(customCalled = false) {
                 confirmButtonText: 'Next &rarr;',
                 showCancelButton: false,
                 allowOutsideClick: false,
-                progressSteps: ['1', '2', '3', '4', '5']
+                progressSteps: ['1', '2', '3', '4', '5', '6']
             }).queue([{
                     text: 'Perfect, you have now switched back to the state of the visualization stored in the snapshot you just clicked.'
-                },
-                {
-                    text: 'Perfect, you have now switched back to the state of the visualization stored in the snapshot you just clicked.'
-                },
-                {
+                }, {
+                    text: 'You can also force create a snapshot by clicking on the snapshot button in the top of the snapshot panel. These snapshots are marked in a reb border so that they can be easily seen.'
+                }, {
                     text: 'You will now begin your practice round. You will be asked 5 questions. You can only proceed to the actual experiment once you answer them all correctly.'
                 },
                 {
@@ -266,10 +267,10 @@ function recallSnapshotTriggered(customCalled = false) {
 
 function clearCount() {
     countOfNameSearch = 0;
-    customSnapshotCount = 0;
-    countOfCustomSnapshotClick = 0;
     countOfSnapshotClick = 0;
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;
     countOfWrongAnswers = 0;
+    customSnapshotCount = 0;
+    countOfCustomSnapshotClick = 0;
 }

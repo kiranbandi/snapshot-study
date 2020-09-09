@@ -7,6 +7,8 @@ countOfSnapshotClick = 0;
 countOfSnapshotCreated = 0;
 countOfSnapshotDeleted = 0;
 countOfWrongAnswers = 0;
+customSnapshotCount = 0;
+countOfCustomSnapshotClick = 0;
 
 // hide other unused snapshot toggles
 $("#snapshot-mode-checkbox").hide();
@@ -69,13 +71,15 @@ var logResponse = function(user_answer) {
         questionNumber: qOrder + 1,
         response: user_answer,
         correct: checkAnswer(user_answer),
-        snapshotMode: 'autosnap',
+        snapshotMode: 'hybrid',
         nameSearchCount: countOfNameSearch,
         snapshotCreatedCount: countOfSnapshotCreated,
         snapshotDeletedCount: countOfSnapshotDeleted,
         snapshotRecalledCount: countOfSnapshotClick,
         snapshotAllCount: countOfAllSnapshots,
-        wrongAttemptCount: countOfWrongAnswers
+        wrongAttemptCount: countOfWrongAnswers,
+        customSnapshotCount: customSnapshotCount,
+        countOfCustomSnapshotClick: countOfCustomSnapshotClick
     };
     console.log("logging response for study question - ", qOrder);
     $.post("#", trialResult).then(function() {
@@ -114,7 +118,12 @@ function storeSnapshotTriggered(snapshotData) {
     countOfAllSnapshots = countOfAllSnapshots + 1;
 }
 
-function recallSnapshotTriggered() {
+function recallSnapshotTriggered(customCalled = false) {
+
+    if (customCalled) {
+        countOfCustomSnapshotClick = countOfCustomSnapshotClick + 1;
+    }
+
     countOfSnapshotClick = countOfSnapshotClick + 1;
 }
 
@@ -124,4 +133,6 @@ function clearCount() {
     countOfSnapshotCreated = 0;
     countOfSnapshotDeleted = 0;
     countOfWrongAnswers = 0;
+    customSnapshotCount = 0;
+    countOfCustomSnapshotClick = 0;
 }
