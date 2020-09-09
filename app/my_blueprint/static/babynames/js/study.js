@@ -108,6 +108,15 @@ var checkAnswer = function(value) {
 }
 
 
+function storeCustomSnapshotTriggered() {
+    customSnapshotCount = customSnapshotCount + 1;
+}
+
+function recallCustomSnapshotTriggered() {
+    countOfCustomSnapshotClick = countOfCustomSnapshotClick + 1;
+}
+
+
 function deleteSnapshotTriggered() {
     countOfSnapshotDeleted = countOfSnapshotDeleted + 1;
     countOfAllSnapshots = countOfAllSnapshots - 1;
@@ -118,12 +127,7 @@ function storeSnapshotTriggered(snapshotData) {
     countOfAllSnapshots = countOfAllSnapshots + 1;
 }
 
-function recallSnapshotTriggered(customCalled = false) {
-
-    if (customCalled) {
-        countOfCustomSnapshotClick = countOfCustomSnapshotClick + 1;
-    }
-
+function recallSnapshotTriggered() {
     countOfSnapshotClick = countOfSnapshotClick + 1;
 }
 

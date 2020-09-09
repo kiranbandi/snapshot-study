@@ -206,6 +206,14 @@ var checkAnswer = function(value) {
 
 
 
+function storeCustomSnapshotTriggered() {
+    customSnapshotCount = customSnapshotCount + 1;
+}
+
+function recallCustomSnapshotTriggered() {
+    countOfCustomSnapshotClick = countOfCustomSnapshotClick + 1;
+}
+
 function deleteSnapshotTriggered() {
     countOfSnapshotDeleted = countOfSnapshotDeleted + 1;
     countOfAllSnapshots = countOfAllSnapshots - 1;
@@ -219,10 +227,6 @@ function storeSnapshotTriggered(snapshotData) {
 function recallSnapshotTriggered(customCalled = false) {
 
     countOfSnapshotClick = countOfSnapshotClick + 1;
-
-    if (customCalled) {
-        countOfCustomSnapshotClick = countOfCustomSnapshotClick + 1;
-    }
 
     if (waitingMode == 'recall-snapshot') {
 
@@ -238,7 +242,7 @@ function recallSnapshotTriggered(customCalled = false) {
             }).queue([{
                     text: 'Perfect, you have now switched back to the state of the visualization stored in the snapshot you just clicked.'
                 }, {
-                    text: 'You can also force create a snapshot by clicking on the snapshot button in the top of the snapshot panel. These snapshots are marked in a reb border so that they can be easily seen.'
+                    text: 'You can also force create a snapshot or mark a newly created snapshot by clicking on the snapshot button in the top of the snapshot panel. These snapshots are marked in a reb border so that they can be easily seen.'
                 }, {
                     text: 'You will now begin your practice round. You will be asked 5 questions. You can only proceed to the actual experiment once you answer them all correctly.'
                 },

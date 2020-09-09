@@ -1,8 +1,6 @@
 var firstTime = true;
 var lastsnapshotID = '';
 
-var customSnapshotCount = 0;
-
 (function() {
         'use strict';
 
@@ -20316,7 +20314,7 @@ var customSnapshotCount = 0;
                     }
                     cash('#'+lastsnapshotID).css({'border':'4px solid red'});
                     cash('#'+lastsnapshotID).addClass('custom-made-snapshot');
-                    customSnapshotCount = customSnapshotCount+1;
+                    storeCustomSnapshotTriggered();
 	            });
 
 	        cash("<div class='snapshot-image-wrapper'></div>")
@@ -20365,7 +20363,13 @@ var customSnapshotCount = 0;
 	                triggeredData = lodash.cloneDeep(data);
 	                if (data) { 
                       // trigger study recall call
-                      recallSnapshotTriggered(cash('#'+uniqueCode).hasClass('custom-made-snapshot'));
+                      recallSnapshotTriggered();
+                      
+                      if(cash('#'+uniqueCode).hasClass('custom-made-snapshot')){
+                          console.log('custom snapshot clicked');
+                        recallCustomSnapshotTriggered();
+                      }
+                      
                       onRecall(data);
                     }
 	            } else if (targetName.indexOf('snapshot-edit') > -1) {
