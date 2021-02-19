@@ -15,8 +15,7 @@
 
 
     	<p>
-            Explore the visualization. For each highlighted point, select one data point that is the closest to each highlighted (red) point. If selection is correct, point will change
-            to blue. Study will automatically proceed to next section after selections.
+            Please select the following data point: <span id="textHere"></span>.
 
         </p>
 
@@ -39,31 +38,52 @@
 	var size = 0;
 	var userId = 0;
 	var start1, start2 = 0;
-	var query="";
 	var resp;
 	var activeColor;
 	var adjustedColor;
 	var respInt;
-    var positions = [];
     var adjustedSize = [20, 200];
     var distractors = [];// not used
     var gap;
     var baseColor = [50,0,0];
     var trialStartTime;
     var GRID_PAD = 50;
-    var clickCount = 0;
+    var correctClickCount = 0;
+    var errorCount = 0;
+    var hoverCount = 0;
+    var targetX = 0;
+    var targetY = 0;
 
-    // [condition, imageURL, visualization_type, cond, emphasis_type,anchor,targets ]
+    // [condition, imageURL, visualization_type, cond, emphasis_type,anchor,plotNametargets,varietyTarget ]
     var trial_array =
         [
-            ['explore','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S']],
-            //['test','economist_daily_chart_23.png','scatter','emph','color','NAM-72'],
-            //['test','economist_daily_chart_108.png','scatter','emph','color','NAM-17'],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+            ['test','economist_daily_chart_5.png','scatter','emph','color','NAM-32',['1108N','1110N','1308N','1307S','1313N','1216S'],['NAM-71+','NAM-23','NAM-13','NAM-48','NAM-5','NAM-49']],
+
+
         ]
 
     var totalTrials = trial_array.length;
     var initialSelection = Math.floor(Math.random() * totalTrials);
+    var targetSelection = Math.floor(Math.random() * trial_array[initialSelection][6].length);
 
+    document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
 
 	$(document).ready(function() {
 			// Parse the query variables
@@ -102,6 +122,7 @@
 
             colorType = COLORTYPE.Lab;
             trialStartTime = new Date();
+
             drawStimulus()
 
 	});
@@ -110,6 +131,7 @@
 
     var drawStimulus = function(){
 
+        trialStartTime = new Date();
         var width = 4*gap + 2 * GRID_PAD + 2*size,
         height = $("#stimulus").height();
 
@@ -196,21 +218,24 @@
                     .range (["red", "blue", "yellow", "fuchsia", "cyan", "orange"]);
 
 
-              //emphasize a target
-              d3.select("body").select("div #stimulus").selectAll("circle")
-                  .data(data)
-                  .filter(function(d) {
-                      return trial_array[initialSelection][5].includes(d.treatmentName)
-                  })
-              .style("fill",  function(d) {
-                var symbolIndex = 0;
-                for(var i=0; i<1; i++){
-                  if(d.treatmentName == trial_array[initialSelection][5])
-                    symbolIndex=i;
-                };
-                  return color(symbolIndex);
-                });
+              //emphasize a target (not needed in blind block)
 
+              if(trial!=5 || trial != 11 || trial!= 17) {
+                  d3.select("body").select("div #stimulus").selectAll("circle")
+                      .data(data)
+                      .filter(function (d) {
+                          return trial_array[initialSelection][5].includes(d.treatmentName)
+                      })
+                      .style("fill", function (d) {
+                          var symbolIndex = 0;
+                          for (var i = 0; i < 1; i++) {
+                              if (d.treatmentName == trial_array[initialSelection][5])
+                                  symbolIndex = i;
+                          }
+                          ;
+                          return color(symbolIndex);
+                      });
+                }
 
                 // Create Event Handlers for mouse
 
@@ -218,27 +243,27 @@
                         var lb = d.treatmentName;
                         var plotName = d.plotName;
 
-                        //console.log(plotName)
-                        //if correct -- change color, add emphasis
-                        //console.log(trial_array[initialSelection][5])
-                        //if(lb == trial_array[initialSelection][5]){
-                        if(trial_array[initialSelection][6].includes(plotName)){
+                        targetX = d3.mouse(this)[0]
+                        targetY = d3.mouse(this)[1]
+
+                        console.log(trial_array[initialSelection][7][targetSelection])
+                        //if(trial_array[initialSelection][6].includes(plotName)){
+                        if(trial_array[initialSelection][7][targetSelection]==lb){
                             d3.select(this)
                                 .style("fill", "blue");
 
-                            clickCount++
+                            correctClickCount++
 
-                            if(clickCount == trial_array[initialSelection][6].length){
-                                console.log("all selected")
-                                window.location.href = "/redirect_next_page";
+                            logResponse()
 
-                            }
+
 
                             //move to next trial, log error count, hovers
                         }
                         else{
                             //wrong selection
                             //increase error count -- keep count of hovers
+                            errorCount++;
                             console.log("wrong")
                         }
 
@@ -261,6 +286,8 @@
                                .attr("y", yScale(yy) - 15 )
                                .attr("class", "mylabel")//adding a label class
                                .text(lb);
+
+                                hoverCount++
 
                           }
 
@@ -287,82 +314,10 @@
                 // handle error
             })
 
-        /*
-        var data = [10, 15, 20, 25, 30];
-
-        var xscale = d3.scaleLinear()
-            .domain([0, d3.max(data)])
-            .range([5, width-5]);
-
-        var yscale = d3.scaleLinear()
-                .domain([0, d3.max(data)])
-                .range([height-GRID_PAD, 0]);
-
-
-        var x_axis = d3.axisBottom()
-                .scale(xscale);
-
-        var y_axis = d3.axisLeft()
-                .scale(yscale);
-
-        x_axis.tickFormat((d,i) => ' ');
-
-
-
-       //add the image as a background
-                svg.append('image')
-                    .attr('xlink:href', '/my_blueprint/baseline/'+trial_array[initialSelection][1])
-                    .attr('width', width)
-                    .attr('height', height);
-
-
-        setTimeout(promptOverlay, 3000);
-        */
     }
 
 
-	function normal(mu, sigma, nsamples){
-    if(!nsamples) nsamples = 6
-    if(!sigma) sigma = 1
-    if(!mu) mu=0
 
-    var run_total = 0
-    for(var i=0 ; i<nsamples ; i++){
-       run_total += Math.random()
-    }
-
-    return sigma*(run_total - nsamples/2)/(nsamples/2) + mu
-    };
-
-    // The maximum is exclusive and the minimum is inclusive
-    function getRandomInt(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    function intersect(p1, p2, r){
-        return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2)) < r;
-    };
-
-
-    function buildPosition(h, x, y, c, p, l, shape) {
-    distractors.push(h);
-    return [
-        [adjustedSize[0], h],
-        c.slice(0),
-        x,
-        y,
-        p,
-        l,
-        shape
-    ];
-    };
-
-
-    var promptOverlay = function() {
-        $(".overlay").addClass("on");
-    }
 
 
 	var logResponse = function() {
@@ -387,7 +342,6 @@
                     .attr("x",0)
                     .attr("fill", "rgb(200,200,200)");
 
-	    positions = [];
 
 
 
@@ -395,10 +349,94 @@
 
         console.log("trial" + trial)
 
-        if(trial == 5){
-                    alert("Press 'OK' to exit this window and begin the study.");
-                    postResponseValues(resp);
-        }
+
+        //log data per correct selection
+        var endTime = new Date();
+
+		 var trialResult = {
+			trialStart: trialStartTime,
+			trialEnd: endTime,
+			trialTime: endTime-trialStartTime,
+            study: trial_array[initialSelection][0],
+			condition: trial_array[initialSelection][3],
+            emph_type: trial_array[initialSelection][4],
+			vis_type: trial_array[initialSelection][2],
+            target: trial_array[initialSelection][7][targetSelection],
+            anchor: trial_array[initialSelection][5],
+            targetX: targetX,
+            targetY: targetY,
+            errorCount: errorCount,
+            hoverCount: hoverCount
+        };
+		//console.log(trialResult)
+        //clear vars
+
+        errorCount = 0;
+        hoverCount = 0;
+        targetX = 0;
+        targetY = 0;
+
+
+        //post response
+        $.post("#", trialResult).then(function(){
+            //if trial array is empty, move to next page
+            //console.log(correctClickCount)
+            //console.log([initialSelection][6].length)
+
+                //all targets selected, next block
+                if(correctClickCount == trial_array[initialSelection][6].length){
+                    console.log("all selected")
+                    correctClickCount = 0; // reset correct click count
+                    trial++;
+                    //remove the previously trial selection from the trialbag
+                    trial_array.splice(initialSelection,1)
+
+                    if(trial_array.length==0){
+                        window.location.href = "/redirect_next_page";
+                    }
+                     //select a random stimuli (color, shape, or dummy)
+                    initialSelection = Math.floor(Math.random() * trial_array.length);
+                    $("#foo").html("You are on block "+ (trial+1) + " of xx test blocks");
+
+                    //select a random target
+                    targetSelection = Math.floor(Math.random() * trial_array[initialSelection][6].length);
+                    document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+                    drawStimulus();
+
+                }else{
+                    //still missing targets in block, choose next target in block
+                    trial_array[initialSelection][7].splice(targetSelection,1)
+                    targetSelection = Math.floor(Math.random() * trial_array[initialSelection][7].length);
+
+                    document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+                    drawStimulus()
+                }
+
+
+
+        })
+
+
+        /*
+
+        //remove target and choose next target
+        trial_array[initialSelection][7].splice(targetSelection,1)
+        targetSelection = Math.floor(Math.random() * trial_array[initialSelection][6].length);
+
+        document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+        drawStimulus()
+
+
+
+        //all targets selected, next block
+        if(correctClickCount == trial_array[initialSelection][6].length){
+
+            console.log("all selected")
+
+
 
         trial++;
 
@@ -410,26 +448,12 @@
 
 
         console.log("trial "+ trial);
-		$("#foo").html("You are on trial "+ (trial+1) + " of xx test trials");
+		$("#foo").html("You are on block "+ (trial+1) + " of xx test blocks");
 
-		var endTime = new Date();
 
-		 var trialResult = {
-			trialStart: trialStartTime,
-			trialEnd: endTime,
-			trialTime: endTime-trialStartTime,
-			condition: trial_array[initialSelection][0],
-			image: trial_array[initialSelection][1],
-			image_type: trial_array[initialSelection][2],
-			targetPresent: trial_array[initialSelection][3],
-            emphasis_type: trial_array[initialSelection][4],
-			description: valuee,
-        };
-		//console.log(trialResult)
-        $.post("#", trialResult).then(function(){
-        	//after posting results, move to next trial
-            respInt = setInterval(drawStimulus, 500);
-        })
+
+        }*/
+
 
 	};
 
@@ -440,7 +464,13 @@
         $.post("#", practiceResult).then(function(){
             // I NEED TO MOVE TO THE NEXT PAGE HERE (E.G., FOR NOW, END)
 
-            window.location.href = "/redirect_next_page";
+
+            //if trial array is empty
+            if(trial_array.length==0) {
+                window.location.href = "/redirect_next_page";
+            }else{
+
+            }
         })
 	};
 

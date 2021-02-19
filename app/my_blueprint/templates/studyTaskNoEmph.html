@@ -1,0 +1,487 @@
+{% extends "template.html" %}
+{% block head %}
+{% endblock %}
+
+
+
+{% block content %}
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/my_blueprint/css/modal.css" />
+
+<script src="{{ url_for('my_blueprint.static', filename='constants.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='colorconversion.js') }}"></script>
+
+
+
+
+    	<p>
+            Please select the following data point: <span id="textHere"></span>.
+
+        </p>
+
+        </div>
+
+    <br><br><br>
+        <div id="foo"></div>
+        <div id="stimulus" width="700px" height="400px"></div>
+
+
+
+<script>
+
+
+
+
+	// Active stimulus variables
+	var trial = 0;
+	var color = [];
+	var size = 0;
+	var userId = 0;
+	var start1, start2 = 0;
+	var resp;
+	var activeColor;
+	var adjustedColor;
+	var respInt;
+    var adjustedSize = [20, 200];
+    var distractors = [];// not used
+    var gap;
+    var baseColor = [50,0,0];
+    var trialStartTime;
+    var GRID_PAD = 50;
+    var correctClickCount = 0;
+    var errorCount = 0;
+    var hoverCount = 0;
+    var targetX = 0;
+    var targetY = 0;
+
+    // [condition, imageURL, visualization_type, cond, emphasis_type,anchor,plotNametargets,varietyTarget ]
+    var trial_array =
+        [
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+            ['test','economist_daily_chart_5.png','scatter','no_emph','none','NAM-23',['1310N','1313S','1115N','1206N','1306S','1112S'],['NAM-32','NAM-76','NAM-79','NAM-72','NAM-37','NAM-17']],
+
+        ]
+
+    var totalTrials = trial_array.length;
+    var initialSelection = Math.floor(Math.random() * totalTrials);
+    var targetSelection = Math.floor(Math.random() * trial_array[initialSelection][6].length);
+
+    document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+	$(document).ready(function() {
+			// Parse the query variables
+			t = new Date();
+			query = window.location.search;
+			if (query.substring(0, 1) == '?')
+				query = query.substring(1);
+			userId = parseInt(query.substring(0, query.indexOf("&")));
+
+			// Establish the display layout
+			var d = query.substring(query.indexOf("-d=") + 3);
+			size = 20;//visualAngleToPixels(2.0,parseFloat(d*24), document.getElementById("dpi").offsetHeight)/2;
+			gap = visualAngleToPixels(6.0,30, 96)/2;
+			/*if (2*size + gap > $("#stimulus").width) {
+				$("#stimulus").width(2*size + gap);
+			}*/
+            $("#stimulus").height(400);
+//			var w = $("#stimulus").width();
+            var width = 4*gap + 2 * GRID_PAD + size;
+			start1 = width * 0.5  - 0.5*gap;
+			start2 = gap + 20 + start1;
+			trial = 0;
+
+			// Instantiate the input
+			$(this).keyup(function(evt){
+			  console.log(evt)
+			});
+
+			 var panelW = window.innerWidth*0.66;
+            panelW=panelW*0.90;
+
+
+        var panelH = window.innerHeight-200;
+			            $("#stimulus").height(panelH);
+            $("#stimulus").width(panelW);
+
+            colorType = COLORTYPE.Lab;
+            trialStartTime = new Date();
+
+            drawStimulus()
+
+	});
+
+
+
+    var drawStimulus = function(){
+
+        trialStartTime = new Date();
+        var width = 4*gap + 2 * GRID_PAD + 2*size,
+        height = $("#stimulus").height();
+
+               width = $("#stimulus").width();
+        height = $("#stimulus").height();
+
+        console.log("width: " + width)
+        start1 = generateRandom(10, width-110) //making position random
+
+         // Remove any existing SVG on the page
+        d3.select("svg").remove();
+
+        var svg = d3.select("body").select("div #stimulus")
+                    .append("svg")
+                    .attr("id","graph")
+                    .attr("width", width)
+                    .attr("height", height);
+
+        center = 0.5*width;
+
+        //stuff for filters
+        var defs = svg.append("defs");
+
+
+
+        //data here
+
+        d3.csv('/my_blueprint/data1.csv')
+            .then(function(data) {
+
+                var xScale = d3.scaleLinear()
+                    .domain([0, d3.max(data, function (d) {
+                            return +d.x+0.3;
+                         }),
+                    ])
+                    .range([0, width]);
+
+                var yScale  = d3.scaleLinear()
+                        .domain([0,
+                            d3.max(data, function (d) {
+                            return +d.y+0.5;
+                         }),
+                        ])
+                        .range([height-GRID_PAD, 0]);
+
+                var x_axis = d3.axisBottom()
+                        .scale(xScale);
+
+                var y_axis = d3.axisLeft()
+                        .scale(yScale);
+
+                x_axis.tickFormat((d,i) => ' ');
+
+                 // Add y-axis
+                          svg.append("g")
+                              .attr("class", "axis")
+                              .attr("transform", "translate(5, 0)")
+                              .call(y_axis);
+
+                      // Add X-axis
+                      svg.append("g")
+                          .attr("class", "axis")
+                          .attr("transform", "translate(0," + (height - GRID_PAD + 1) + ")")
+                          .call(x_axis);
+
+
+
+              svg.append('g')
+                .selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                  .attr("cx", function (d) { return xScale(d.x);} )
+                  .attr("cy", function (d) { return yScale(d.y); } )
+                  .attr("r", 3.0)
+                  .style("fill", "#69b3a2")
+                  .on("mouseover", handleMouseOver)
+                  .on("mouseout", handleMouseOut)
+                  .on("click", handleClick);
+
+
+                var color = d3.scaleLinear()
+                    .domain ([0, 1, 2, 3, 4, 5])
+                    .range (["red", "blue", "yellow", "fuchsia", "cyan", "orange"]);
+
+
+              //emphasize anchors if too many errors
+
+
+
+                // Create Event Handlers for mouse
+
+                    function handleClick(d, i){
+                        var lb = d.treatmentName;
+                        var plotName = d.plotName;
+
+                        targetX = d3.mouse(this)[0]
+                        targetY = d3.mouse(this)[1]
+
+                        console.log(trial_array[initialSelection][7][targetSelection])
+                        //if(trial_array[initialSelection][6].includes(plotName)){
+                        if(trial_array[initialSelection][7][targetSelection]==lb){
+                            d3.select(this)
+                                .style("fill", "blue");
+
+                            correctClickCount++
+
+                            logResponse()
+
+
+
+                            //move to next trial, log error count, hovers
+                        }
+                        else{
+                            //wrong selection
+                            //increase error count -- keep count of hovers
+                            errorCount++;
+                            console.log("wrong")
+                        }
+
+
+                    }
+
+
+                      function handleMouseOver(d, i) {  // Add interactivity
+                            // Use D3 to select element, change color and size
+
+                            var xx = d.x;
+                            var yy = d.y;
+                            var lb = d.treatmentName;
+
+                            d3.select(this)
+                              .attr("r", 3.0*2);
+
+                            svg.append("text")
+                               .attr("x", xScale(xx) - 30 )
+                               .attr("y", yScale(yy) - 15 )
+                               .attr("class", "mylabel")//adding a label class
+                               .text(lb);
+
+                                hoverCount++
+
+
+                                if(hoverCount==30) {
+                                      d3.select("body").select("div #stimulus").selectAll("circle")
+                                          .data(data)
+                                          .filter(function (d) {
+                                              return trial_array[initialSelection][5].includes(d.treatmentName)
+                                          })
+                                          .style("fill", function (d) {
+                                              var symbolIndex = 0;
+                                              for (var i = 0; i < 1; i++) {
+                                                  if (d.treatmentName == trial_array[initialSelection][5])
+                                                      symbolIndex = i;
+                                              }
+                                              ;
+                                              return color(symbolIndex);
+                                          });
+                                    }
+
+
+
+                          }
+
+
+                         function handleMouseOut(d, i) {
+                                    // Use D3 to select element, change color back to normal
+                                    d3.select(this)
+                                      //.style("fill","#69b3a2")
+                                       .attr("r", 3.0);
+
+
+                                    // Select text by id and then remove
+                                    d3.selectAll(".mylabel").remove()//this will remove the text on mouse out
+                                    //d3.select("#t" + d.x + "-" + d.y + "-" + i).remove();  // Remove text location
+                                  }
+
+
+
+
+
+            })
+            .catch(function(error){
+                console.log(error)
+                // handle error
+            })
+
+    }
+
+
+
+
+
+	var logResponse = function() {
+
+         // Remove any existing SVG on the page
+        d3.select("svg").remove();
+        d3.selectAll('svg').remove();
+
+        // Set the screen to grey to avoid afterimage effects
+       d3.selectAll("circle").remove();
+        d3.selectAll("rect").remove();
+        d3.selectAll("image").remove();
+        d3.select("div #stimuli").select("svg")
+                    .append("rect")
+                    .attr("width", function() {
+                        return (2*proximity + 2 * GRID_PAD + 4 * LARGEST_SIZE);
+
+                    })
+                    .attr("height", function() {
+                        return (2*proximity + 2 * GRID_PAD + 2 * LARGEST_SIZE);
+                    })
+                    .attr("x",0)
+                    .attr("fill", "rgb(200,200,200)");
+
+
+
+
+		clearInterval(respInt);
+
+        console.log("trial" + trial)
+
+
+        //log data per correct selection
+        var endTime = new Date();
+
+		 var trialResult = {
+			trialStart: trialStartTime,
+			trialEnd: endTime,
+			trialTime: endTime-trialStartTime,
+            study: trial_array[initialSelection][0],
+			condition: trial_array[initialSelection][3],
+            emph_type: trial_array[initialSelection][4],
+			vis_type: trial_array[initialSelection][2],
+            target: trial_array[initialSelection][7][targetSelection],
+            anchor: trial_array[initialSelection][5],
+            targetX: targetX,
+            targetY: targetY,
+            errorCount: errorCount,
+            hoverCount: hoverCount
+        };
+		//console.log(trialResult)
+        //clear vars
+
+        errorCount = 0;
+        hoverCount = 0;
+        targetX = 0;
+        targetY = 0;
+
+
+        //post response
+        $.post("#", trialResult).then(function(){
+            //if trial array is empty, move to next page
+            //console.log(correctClickCount)
+            //console.log([initialSelection][6].length)
+
+                //all targets selected, next block
+                if(correctClickCount == trial_array[initialSelection][6].length){
+                    console.log("all selected")
+                    correctClickCount = 0; // reset correct click count
+                    trial++;
+                    //remove the previously trial selection from the trialbag
+                    trial_array.splice(initialSelection,1)
+
+                    if(trial_array.length==0){
+                        window.location.href = "/redirect_next_page";
+                    }
+                     //select a random stimuli (color, shape, or dummy)
+                    initialSelection = Math.floor(Math.random() * trial_array.length);
+                    $("#foo").html("You are on block "+ (trial+1) + " of xx test blocks");
+
+                    //select a random target
+                    targetSelection = Math.floor(Math.random() * trial_array[initialSelection][6].length);
+                    document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+                    drawStimulus();
+
+                }else{
+                    //still missing targets in block, choose next target in block
+                    trial_array[initialSelection][7].splice(targetSelection,1)
+                    targetSelection = Math.floor(Math.random() * trial_array[initialSelection][7].length);
+
+                    document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+                    drawStimulus()
+                }
+
+
+
+        })
+
+
+        /*
+
+        //remove target and choose next target
+        trial_array[initialSelection][7].splice(targetSelection,1)
+        targetSelection = Math.floor(Math.random() * trial_array[initialSelection][6].length);
+
+        document.getElementById('textHere').innerHTML = trial_array[initialSelection][7][targetSelection]
+
+        drawStimulus()
+
+
+
+        //all targets selected, next block
+        if(correctClickCount == trial_array[initialSelection][6].length){
+
+            console.log("all selected")
+
+
+
+        trial++;
+
+        //remove the previously trial selection from the trialbag
+        trial_array.splice(initialSelection,1)
+
+         //select a random stimuli (color, shape, or dummy)
+        initialSelection = Math.floor(Math.random() * trial_array.length);
+
+
+        console.log("trial "+ trial);
+		$("#foo").html("You are on block "+ (trial+1) + " of xx test blocks");
+
+
+
+        }*/
+
+
+	};
+
+	var postResponseValues = function(response) {
+	    var practiceResult = {
+	        response: resp
+        };
+        $.post("#", practiceResult).then(function(){
+            // I NEED TO MOVE TO THE NEXT PAGE HERE (E.G., FOR NOW, END)
+
+
+            //if trial array is empty
+            if(trial_array.length==0) {
+                window.location.href = "/redirect_next_page";
+            }else{
+
+            }
+        })
+	};
+
+
+
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "template.html" %}
+{% block head %}
+{% endblock %}
+
+<link rel="stylesheet" type="text/css" href="css/jnd_test.css" />
+<link rel="stylesheet" type="text/css" href="static/css/jnd_test.css" />
+
+
+{% block content %}
+
+        <div>
+            <h1>One or more of the responses was incorrect.</h1>
+            <h3>Not Eligible</h3>
+    <p class="label">In order to be eligible for this study you must be capable of distinguishing colors. That is, you should be free from
+        red-green or other forms of color blindness. Additionally, your monitor should not have any form of screen filters (e.g., blue light filter). </p>
+    <p class="label">If you know you are colorblind, then you may <a href="javascript: self.close()">close this window</a>.</p>
+
+
+            <p>You may enter " vision " as your completion code for compensation.</p>
+
+     <p class="label">According to our test, you are not eligible for the study. Please <a href="javascript: self.close()">close this window</a>.</p>
+
+        </div>
+
+
+    <hr>
+
+
+
+{% endblock %}

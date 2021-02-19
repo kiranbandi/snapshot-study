@@ -1,0 +1,108 @@
+{% extends "template.html" %}
+{% block head %}
+{% endblock %}
+
+<link rel="stylesheet" type="text/css" href="css/jnd_test.css" />
+<link rel="stylesheet" type="text/css" href="static/css/jnd_test.css" />
+
+
+{% block content %}
+    {% if incorrect %}
+        <h1>One or more of the responses was incorrect, please try again.</h1>
+    {% else %}
+        <div>
+            <h3>Visual Accuracy</h3>
+    <p class="label">In order to complete this study you must be capable of distinguishing colors.
+        That is, you may struggle with the study if you have red-green or other forms of color vision deficiencies. Before we begin, please answer the following questions:</p>
+    <!--<p class="label">If you know you are colorblind, then you may <a href="javascript: self.close()">close this window</a>.</p>-->
+
+        </div>
+<br>
+     <form id="form" action="#" method="post">
+
+
+
+         <p>Are you able to see objects on your computer screen clearly (while wearing any prescribed glasses or contact lenses)? </p>
+              <input type="radio" id="ableyes" name="vision" value="yes" required>
+              <label for="ableyes">Yes</label><br>
+              <input type="radio" id="ableno" name="vision" value="no">
+              <label for="ableno">No</label><br>
+
+
+         <label for="vissioncomment">Are there any reasons why you would *not* be able to accurately see
+        differences such as colour or shape in the objects on your computer
+        screen? (e.g., because of screen glare, monitor faults, fatigue, etc.)
+        (Note that this will not exclude you from the study).</label><br>
+
+         <textarea rows="4" cols="50" id="vissioncomment" name="vissioncomment" form="form">
+
+         </textarea>
+
+         <p>Do you have any color-vision deficiencies (commonly called "color
+            blindness")?
+        </p>
+
+         <input type="radio" id="deficiencyYes" name="deficiency" value="yes">
+              <label for="deficiencyYes">Yes</label><br>
+              <input type="radio" id="deficiencyNo" name="deficiency" value="no" required>
+              <label for="deficiencyNo">No</label><br>
+
+         <p>If yes, please state what color-vision deficiencies you have</p>
+         <textarea rows="4" cols="50" id="deficiencyText" name="deficiencyText" form="form">
+
+         </textarea>
+
+    <br>
+    <p class="label">For each of the following images, <b>please input the number you see</b> in the box immediately to the right of the image. Click the "Submit" button when you have finished.</p>
+
+
+    {% endif %}
+
+    <hr>
+
+
+
+    <table>
+    	<tr>
+        	<td>
+            	<img src="{{ url_for('my_blueprint.static', filename='Ishihara/07.png') }}">
+            </td>
+            <td>
+            	<input type="number" value="0" min="0" max="100" id="response07" name="response07" required>
+            </td>
+        	<td>
+            	<img src="{{ url_for('my_blueprint.static', filename='Ishihara/01.png') }}">
+            </td>
+            <td>
+            	<input type="number" value="0" min="0" max="100" id="response01" name="response01" required>
+            </td>
+        </tr>
+        <tr>
+        	<td>
+            	<img src="{{ url_for('my_blueprint.static', filename='Ishihara/08.png') }}">
+            </td>
+            <td>
+            	<input type="number" value="0" min="0" max="100" id="response08" name="response08" required>
+            </td>
+        	<td>
+            	<img src="{{ url_for('my_blueprint.static', filename='Ishihara/06.png') }}">
+            </td>
+            <td>
+            	<input type="number" value="0" min="0" max="100" id="response06" name="response06" required>
+            </td>
+        	<td>
+            	<img src="{{ url_for('my_blueprint.static', filename='Ishihara/10.png') }}">
+            </td>
+            <td>
+            	<input type="number" value="0" min="0" max="100" id="response10" name="response10" required>
+            </td>
+        </tr>
+    </table>
+<br><br>
+             <input type="submit" name="submit" value="Submit Answer">
+    <br><br><br><br><br><br>
+
+
+
+    </form>
+{% endblock %}

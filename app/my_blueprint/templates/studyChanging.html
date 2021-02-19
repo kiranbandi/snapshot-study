@@ -12,29 +12,11 @@
 <script src="{{ url_for('my_blueprint.static', filename='colorconversion.js') }}"></script>
 
 
- <div class="overlay" id="overlay">
-
-<p class="formfield">
-         <label for="vissioncomment"><span style="color:white">Please describe the graphic in detail</span> </label><br>
-
-         <textarea rows="4" cols="50" id="vissioncomment" name="vissioncomment" >
-
-         </textarea>
-
-   <button onclick="submit()" class="close-button">
-    Submit
-    </button>
-
-</p>
-  </div>
 
 
     	<p>
-            In this study you will see several visualization graphics. You will have 10 seconds to freely view the graphic.
-            After 10 seconds, you will be asked to describe the graphic in as much detail as possible.
-
-
-
+            Explore the visualization. For each highlighted point, select one data point that is the closest to each highlighted (red) point. If selection is correct, point will change
+            to blue. Study will automatically proceed to next section after selections.
 
         </p>
 
@@ -48,23 +30,8 @@
 
 <script>
 
-    var valuee;
-    //will be equivalent to enter
-        function submit(){
-    		$(".overlay").removeClass("on");
-
-    		valuee = document.getElementById("vissioncomment").value;
-
-            document.getElementById('vissioncomment').value = ''
-    		console.log(valuee);
-            logResponse();
-
-        }
 
 
-// Stimulus set variables
-	var colors = [[[50, 0, 40], [50, 0, 40]], [[50, 0, 10], [50, 0, 50]], [[60, 0, 40], [30, 0, 50]]];
-	var shapes = ["square_filled","diamond_filled","square_unfilled","diamond_unfilled","qton3","qton4","square_filled","diamond_filled","square_unfilled","diamond_unfilled","qton3","qton4"];
 
 	// Active stimulus variables
 	var trial = 0;
@@ -84,16 +51,13 @@
     var baseColor = [50,0,0];
     var trialStartTime;
     var GRID_PAD = 50;
+    var clickCount = 0;
 
-    // [condition, imageURL, visualization_type, emphasis_type ]
+    // [condition, imageURL, visualization_type, cond, emphasis_type,anchor,targets ]
     var trial_array =
         [
-            ['practice','media-visMost457.png','media','none'],
-            ['practice','treasuryA8.png','government','none'],
-            ['practice','treasuryB07.png','government','none'],
-            ['practice','treasuryD06_3.png','government','none'],
-            ['practice','treasuryJ03_4.png','government','none'],
-            ['practice','vis211.png','media','none']
+            ['explore','economist_daily_chart_5.png','scatter','emph','color','NAM-30',['1303S','1108S','1312N','1206S','1302N','1203N']],
+
         ]
 
     var totalTrials = trial_array.length;
@@ -125,18 +89,6 @@
 			// Instantiate the input
 			$(this).keyup(function(evt){
 			  console.log(evt)
-			  /*if (evt.which == 69) { //used to be 70
-				resp = 0
-                  console.log(respInt)
-                  clearInterval(respInt);
-				// This is in Stimuli.js. For flickering the blank screen
-				adapt(false);
-			  }
-			  if (evt.which == 78) { //used to be 74
-				resp = 1;
-				clearInterval(respInt);
-				adapt(false);
-			  }*/
 			});
 
 			 var panelW = window.innerWidth*0.66;
@@ -163,7 +115,7 @@
                width = $("#stimulus").width();
         height = $("#stimulus").height();
 
-        console.log("witdh: " + width)
+        console.log("width: " + width)
         start1 = generateRandom(10, width-110) //making position random
 
          // Remove any existing SVG on the page
@@ -182,7 +134,159 @@
 
 
 
+        //data here
 
+        d3.csv('/my_blueprint/data1.csv')
+            .then(function(data) {
+
+                var xScale = d3.scaleLinear()
+                    .domain([0, d3.max(data, function (d) {
+                            return +d.x+0.3;
+                         }),
+                    ])
+                    .range([0, width]);
+
+                var yScale  = d3.scaleLinear()
+                        .domain([0,
+                            d3.max(data, function (d) {
+                            return +d.y+0.5;
+                         }),
+                        ])
+                        .range([height-GRID_PAD, 0]);
+
+                var x_axis = d3.axisBottom()
+                        .scale(xScale);
+
+                var y_axis = d3.axisLeft()
+                        .scale(yScale);
+
+                x_axis.tickFormat((d,i) => ' ');
+
+                 // Add y-axis
+                          svg.append("g")
+                              .attr("class", "axis")
+                              .attr("transform", "translate(5, 0)")
+                              .call(y_axis);
+
+                      // Add X-axis
+                      svg.append("g")
+                          .attr("class", "axis")
+                          .attr("transform", "translate(0," + (height - GRID_PAD + 1) + ")")
+                          .call(x_axis);
+
+
+
+              svg.append('g')
+                .selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                  .attr("cx", function (d) { return xScale(d.x);} )
+                  .attr("cy", function (d) { return yScale(d.y); } )
+                  .attr("r", 3.0)
+                  .style("fill", "#69b3a2")
+                  .on("mouseover", handleMouseOver)
+                  .on("mouseout", handleMouseOut)
+                  .on("click", handleClick);
+
+
+                var color = d3.scaleLinear()
+                    .domain ([0, 1, 2, 3, 4, 5])
+                    .range (["red", "blue", "yellow", "fuchsia", "cyan", "orange"]);
+
+
+              //emphasize a target
+              d3.select("body").select("div #stimulus").selectAll("circle")
+                  .data(data)
+                  .filter(function(d) {
+                      return trial_array[initialSelection][5].includes(d.treatmentName)
+                  })
+              .style("fill",  function(d) {
+                var symbolIndex = 0;
+                for(var i=0; i<1; i++){
+                  if(d.treatmentName == trial_array[initialSelection][5])
+                    symbolIndex=i;
+                };
+                  return color(symbolIndex);
+                });
+
+
+                // Create Event Handlers for mouse
+
+                    function handleClick(d, i){
+                        var lb = d.treatmentName;
+                        var plotName = d.plotName;
+
+                        console.log(plotName)
+                        //if correct -- change color, add emphasis
+                        //console.log(trial_array[initialSelection][5])
+                        //if(lb == trial_array[initialSelection][5]){
+                        if(trial_array[initialSelection][6].includes(plotName)){
+                            d3.select(this)
+                                .style("fill", "blue");
+
+                            clickCount++
+
+                            if(clickCount == trial_array[initialSelection][6].length){
+                                console.log("all selected")
+                                window.location.href = "/redirect_next_page";
+
+                            }
+
+                            //move to next trial, log error count, hovers
+                        }
+                        else{
+                            //wrong selection
+                            //increase error count -- keep count of hovers
+                            console.log("wrong")
+                        }
+
+
+                    }
+
+
+                      function handleMouseOver(d, i) {  // Add interactivity
+                            // Use D3 to select element, change color and size
+
+                            var xx = d.x;
+                            var yy = d.y;
+                            var lb = d.treatmentName;
+
+                            d3.select(this)
+                              .attr("r", 3.0*2);
+
+                            svg.append("text")
+                               .attr("x", xScale(xx) - 30 )
+                               .attr("y", yScale(yy) - 15 )
+                               .attr("class", "mylabel")//adding a label class
+                               .text(lb);
+
+                          }
+
+
+                         function handleMouseOut(d, i) {
+                                    // Use D3 to select element, change color back to normal
+                                    d3.select(this)
+                                      //.style("fill","#69b3a2")
+                                       .attr("r", 3.0);
+
+
+                                    // Select text by id and then remove
+                                    d3.selectAll(".mylabel").remove()//this will remove the text on mouse out
+                                    //d3.select("#t" + d.x + "-" + d.y + "-" + i).remove();  // Remove text location
+                                  }
+
+
+
+
+
+            })
+            .catch(function(error){
+                console.log(error)
+                // handle error
+            })
+
+        /*
         var data = [10, 15, 20, 25, 30];
 
         var xscale = d3.scaleLinear()
@@ -212,7 +316,7 @@
 
 
         setTimeout(promptOverlay, 3000);
-
+        */
     }
 
 
@@ -305,13 +409,7 @@
 
 
         console.log("trial "+ trial);
-		$("#foo").html("You are on trial "+ (trial+1) + " of 6 practice trials");
-
-
-
-
-
-
+		$("#foo").html("You are on trial "+ (trial+1) + " of xx test trials");
 
 		var endTime = new Date();
 
@@ -323,6 +421,7 @@
 			image: trial_array[initialSelection][1],
 			image_type: trial_array[initialSelection][2],
 			targetPresent: trial_array[initialSelection][3],
+            emphasis_type: trial_array[initialSelection][4],
 			description: valuee,
         };
 		//console.log(trialResult)
@@ -330,9 +429,6 @@
         	//after posting results, move to next trial
             respInt = setInterval(drawStimulus, 500);
         })
-
-
-
 
 	};
 
