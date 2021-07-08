@@ -4,7 +4,7 @@
     "description": "BOF study",
     "main": "run.py",
     "scripts": {
-        "start": "nodemon --exec python run.py"
+        "start": "nodemon --exec python3 run.py"
     },
     "repository": {
         "type": "git",

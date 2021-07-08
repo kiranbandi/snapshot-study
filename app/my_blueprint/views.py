@@ -16,7 +16,7 @@ my_blueprint = Blueprint('my_blueprint', __name__,
 @verify_session_valid
 def practice_results():
     if request.method == 'POST':
-        log = db.snapshot()
+        log = db.chord()
         log.participantID = session['participantID']
         log.trialStart = request.form['trialStart']
         log.trialEnd = request.form['trialEnd']
@@ -25,13 +25,6 @@ def practice_results():
         log.questionNumber=request.form['questionNumber']
         log.response=request.form['response']
         log.correct=request.form['correct']
-        log.snapshotMode=request.form['snapshotMode']
-        log.nameSearchCount=request.form['nameSearchCount']        
-        log.snapshotCreatedCount = request.form['snapshotCreatedCount']
-        log.snapshotDeletedCount = request.form['snapshotDeletedCount']
-        log.snapshotRecalledCount = request.form['snapshotRecalledCount']
-        log.snapshotAllCount = request.form['snapshotAllCount']
-        log.wrongAttemptCount = request.form['wrongAttemptCount']
         db.session.add(log)
         db.session.commit()
     return render_template("practice.html", example="This is example text.")
@@ -42,7 +35,7 @@ def practice_results():
 @verify_session_valid
 def study_results():
     if request.method == 'POST':
-        log = db.snapshot()
+        log = db.chord()
         log.participantID = session['participantID']
         log.trialStart = request.form['trialStart']
         log.trialEnd = request.form['trialEnd']
@@ -51,13 +44,6 @@ def study_results():
         log.questionNumber=request.form['questionNumber']
         log.response=request.form['response']
         log.correct=request.form['correct']
-        log.snapshotMode=request.form['snapshotMode']
-        log.nameSearchCount=request.form['nameSearchCount']
-        log.snapshotCreatedCount = request.form['snapshotCreatedCount']
-        log.snapshotDeletedCount = request.form['snapshotDeletedCount']
-        log.snapshotRecalledCount = request.form['snapshotRecalledCount']
-        log.snapshotAllCount = request.form['snapshotAllCount']
-        log.wrongAttemptCount = request.form['wrongAttemptCount']
         db.session.add(log)
         db.session.commit()
     return render_template("study.html", example="This is example text.")

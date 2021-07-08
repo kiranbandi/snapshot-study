@@ -1,75 +1,31 @@
 {% extends "template.html" %} {% block head %} {% endblock %} {% block content %}
-<!-- Google fonts -->
-<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-<!-- jQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <!-- Bootstrap 3 -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
-<link href="{{ url_for('my_blueprint.static', filename='babynames/css/bootstrap-combobox.css') }}" type="text/css" rel="stylesheet">
-<link href="{{ url_for('my_blueprint.static', filename='babynames/css/style.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ url_for('my_blueprint.static', filename='style.css') }}" type="text/css" rel="stylesheet">
 <!-- other assets -->
-<script src="{{ url_for('my_blueprint.static', filename='babynames/js/libraries/d3.v3.min.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='babynames/js/libraries/bootstrap-combobox.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='babynames/js/all_names.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='babynames/js/snapshot.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/lib/d3.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/lib/jquery.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/lib/data.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/lib/chord.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/lib/sankey.js') }}"></script>
+
+<!-- Sankey chart external lib -->
+<script src="https://unpkg.com/d3-array@1"></script>
+<script src="https://unpkg.com/d3-collection@1"></script>
+<script src="https://unpkg.com/d3-path@1"></script>
+<script src="https://unpkg.com/d3-shape@1"></script>
+<script src="https://unpkg.com/d3-sankey@0"></script>
+
 
 <body>
+    <div class="container text-center">
+        <svg id='chart'></svg>
 
-    <div class="chartWrapper">
-
-        <div class="container-fluid" style="margin-bottom:25px ;">
-            <div class="text-right row text-center">
-                <h3 id='study-question' class='col-sm-8 column text-center'>When you are ready click on the "START STUDY" button. Consider creating a snapshot every time you search a name to answer a question. This will make it easier to answer questions about repeated names.</h3>
-                <button id='study-trigger' style="margin-top:20px;height:40px;" class="btn btn-danger col-sm-1 column text-center">START STUDY</button>
-            </div>
-        </div>
-
-        <div id="cont" class="container-fluid">
-            <!-- Search box and Boy / Girl button -->
-            <div class="row text-center">
-                <div class="col-sm-3 column text-center">
-                    <div class="form-group">
-                        <select id="searchBox" class="combobox input-large form-control" style="display: none;" onchange="searchEvent(this.value)">
-						  <option value="" selected="selected">Search name...</option>
-						</select>
-                    </div>
-                </div>
-                <div class="col-sm-2 col-sm-push-2 column text-center">
-                    <div id="buttonWrapper" class="btn-group" data-toggle="buttons">
-                        <label id="boyButton" class="btn btn-default"><input type="radio" class="btn-options"> BOYS </label>
-                        <label id="girlButton" class="btn btn-default active"><input type="radio" class="btn-options"> GIRLS </label>
-                    </div>
-                </div>
-                <div class="col-sm-3 col-sm-push-2 column text-center">
-                    <div class="col-md-offset-1 col-md-4 column text-center">
-                        <button class="btn btn-default" id='resetname'>RESET</button>
-                    </div>
-                </div>
-                <div class="col-sm-2 col-sm-pull-5 column text-center">
-                    <span class="genderTitle">Girls</span>
-                </div>
-            </div>
-            <!-- Focus chart -->
-            <div class="row">
-                <div class="col-md-12 column text-center">
-                    <div class="chart focus"></div>
-                </div>
-            </div>
-            <!-- Context chart -->
-            <div class="row">
-                <div class="col-md-12 column text-center">
-                    <div class="chart context"></div>
-                </div>
-            </div>
-        </div>
+        <button id='next' class="btn btn-primary">Next</button>
     </div>
-    <script src="{{ url_for('my_blueprint.static', filename='babynames/js/questions.js')}}"></script>
-    <script src="{{ url_for('my_blueprint.static', filename='babynames/js/babynames.js')}}"></script>
-    <script src="{{ url_for('my_blueprint.static', filename='babynames/js/study.js')}}"></script>
+    <script src="{{ url_for('my_blueprint.static', filename='js/study.js') }}"></script>
 </body>
 
 {% endblock %}
