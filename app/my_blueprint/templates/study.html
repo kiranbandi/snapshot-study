@@ -5,13 +5,13 @@
 
 <link href="{{ url_for('my_blueprint.static', filename='style.css') }}" type="text/css" rel="stylesheet">
 <!-- other assets -->
-<script src="{{ url_for('my_blueprint.static', filename='js/lib/d3.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='js/lib/jquery.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='js/lib/data.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='js/lib/chord.js') }}"></script>
-<script src="{{ url_for('my_blueprint.static', filename='js/lib/sankey.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/libraries/d3.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/libraries/jquery.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/librariesraries/data.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/libraries/chord.js') }}"></script>
+<script src="{{ url_for('my_blueprint.static', filename='js/libraries/sankey.js') }}"></script>
 
-<!-- Sankey chart external lib -->
+<!-- Sankey chart external libraries -->
 <script src="https://unpkg.com/d3-array@1"></script>
 <script src="https://unpkg.com/d3-collection@1"></script>
 <script src="https://unpkg.com/d3-path@1"></script>
@@ -21,7 +21,7 @@
 
 <body>
     <div class="container text-center">
-        <svg id='chart'></svg>
+        <svg class='d-block' id='chart'></svg>
 
         <button id='next' class="btn btn-primary">Next</button>
     </div>
