@@ -1,24 +1,30 @@
-let studyDatasets = ['chord-sample', 'sankey-sample', 'chord-space', 'sankey-space', 'chord-debt', 'sankey-debt', 'chord-phone', 'sankey-phone'];
+// First get the condition 
+var condition = getCond();
+// Then get the corresponding map based on the condition 
+var condition_set = condition_map[condition];
 
+// Start Iterator
 let currentIndex = 0;
+// Show first chart 
+let value = condition_set[currentIndex];
+let [studyType] = value.split('-');
+if (studyType == 'chord') { createChord('sample') }
+else { createSankey('sample') }
+currentIndex += 1;
 
 $('#next').click(() => {
-
-    if (currentIndex >= studyDatasets.length) {
-        alert('study done');
+    if (currentIndex >= condition_set.length) {
+        window.location.href = "/redirect_next_page";
     }
-
     else {
-        let value = studyDatasets[currentIndex];
-        let [studyType, datasetName] = value.split('-');
-
-        if (studyType == 'chord') {
-            createChord(datasetName);
-        }
-        else {
-            createSankey(datasetName);
-        }
+        let value = condition_set[currentIndex];
+        let [studyType] = value.split('-');
+        if (studyType == 'chord') { createChord('sample') }
+        else { createSankey('sample') }
         currentIndex += 1;
     }
 });
+
+
+
 
